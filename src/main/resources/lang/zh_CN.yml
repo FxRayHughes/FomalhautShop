@@ -1,0 +1,59 @@
+system-message-sell-not-number: "§8[§4 商店 §8]§7 出售失败 你只有{0}X{2} &8({1})"
+system-message-buy-not-money: "§8[§4 商店 §8]§7 你还缺少 &f{0}{1}"
+system-message-buy-not-permission: "§8[§4 商店 §8]§7 你缺少 &f{0}&7 权限无法购买"
+system-message-buy-not-limit: "§8[§4 商店 §8]§7 这个商品限购 {0}件 你已经购买了 {1} 件 只可以购买{2}件"
+system-message-buy-not-item:
+  - ==: JSON
+    args:
+      - hover: "{0}"
+    text: '§8\[§4 商店 §8\]§7 你还缺少 &6&l\[[&6以下物品]&6&l\]'
+system-message-buy-success-money: '§8\[§4 商店 §8\]§7 购买成功 购买&f{0}X{1} &7共花费&f {2}{3}'
+system-message-buy-success-item:
+  - ==: JSON
+    args:
+      - hover: "{2}"
+    text: '§8\[§4 商店 §8\]§7 购买成功 购买&f{0}X{1} &7共消耗&f [物品列表]'
+system-message-buy-success-money-item:
+  - ==: JSON
+    args:
+      - hover: "{4}"
+    text: '§8\[§4 商店 §8\]§7 购买成功 购买&f{0}X{1} &7共花费&f {2}{3} 与 [物品列表]'
+system-message-sell-success: "§8[§4 商店 §8]§7 成功出售 &f{0} X{1} &7获得了 &f{2}{3}"
+shop-ui-edit: "编辑模式: {0}"
+shop-ui-no-item: '&4物品不存在&e {0}:{1}'
+shop-ui-buy-limit:
+  - '&7限购: &f{1}/{0}件 &8({2})'
+shop-ui-buy-discount:
+  - '&c&m原价: {0} &f({1})/个'
+shop-ui-buy:
+  - '&7出售价: &f{0} ({1})/个'
+  - '&8左键购买'
+shop-ui-buyItem-info: '&f- {0} &fX{1}'
+shop-ui-buyItem-title:
+  - '&7购买物品需求:'
+shop-ui-sell:
+  - '&7回收价: &f{0} ({1})/个'
+  - '&8右键出售 (&7最大{2}&8)'
+shop-ui-sell-limit:
+  - '&7回收限制: &f{1}/{0}件 &8({2})'
+shop-ui-edit-normal:
+  - '&4以下内容仅管理员可见'
+  - '&cID: {0}'
+  - ' '
+  - '&4&lShift+右键 打开编辑模式'
+  - '&e&lShift+左键 复制到粘贴板'
+  - '&6&lQ键 删除商品'
+shop-ui-edit-condition-title:
+  - '&c条件:'
+shop-ui-edit-condition-info: '&f-> {0}'
+shop-ui-edit-purchasing-title: ""
+
+chat-message-input-weight: "§8[§4 商店 §8]§7 输入你要设置的优先级 &8(输入&fexit&8退出)"
+chat-message-input-buy: "§8[§4 商店 §8]§7 请输入你要购买的数量 &8(输入&fexit&8退出)"
+chat-message-input-sell: "§8[§4 商店 §8]§7 请输入你要出售的数量 &8(输入&fexit&8退出)"
+chat-message-input-error: "§8[§4 商店 §8]§7 无效输入 请输入整数"
+chat-message-input-edit-set-good: "§8[§4 商店 §8]§7 输入物品的ID &f({0})  &8(输入&fexit&8退出)"
+chat-message-input-edit-set-name: "§8[§4 商店 §8]§7 输入物品的显示名  &8(输入&fexit&8退出)"
+chat-message-input-edit-set-good-amount: "§8[§4 商店 §8]§7 输入物品的数量"
+chat-message-input-edit-set-good-success: "§8[§4 商店 §8]§7 已成功设置为: &f({0})"
+chat-message-input-edit-set-name-success: "§8[§4 商店 §8]§7 显示名已成功设置为: &f({0})"

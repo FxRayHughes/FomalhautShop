@@ -1,0 +1,21 @@
+Vault:
+  name: "货币"
+"世界币":
+  #Type可选: INT DOUBLE
+  #INT整数  DOUBLE小数
+  #Value会自动取整
+  type: "INT"
+  name: "&e世界币"
+  take:
+    - "abo editmo 世界币 <value> - <player>"
+  add:
+    - "abo editmo 世界币 <value> + <player>"
+  get: "%aboe_世界币_0_me_0%"
+点券:
+  type: "INT"
+  name: "&f点券"
+  take:
+    - "points take <player> <value>"
+  add:
+    - "points give <player> <value>"
+  get: "%playerpoints_points%"

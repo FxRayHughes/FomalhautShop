@@ -1,0 +1,19 @@
+#折扣功能说明:
+#当同时满足多个Group时
+#以折扣力度最大的为标准
+"VIP":
+  permissions: "this.is.a.permissions"
+  #指定某个商店可用 all就是全都可以用 或者是不写这个也算全都可用
+  shop:
+    - "all"
+  data:
+    "Vault": 0.9
+    "世界币": 0.8
+"VIPPlus":
+  permissions: "this.is.a.permissions.plus"
+  shop:
+    - "test"
+    - "none"
+  data:
+    "Vault": 0.1
+    "世界币": 0.9

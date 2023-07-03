@@ -1,0 +1,216 @@
+#不要让商店以 default 为名称
+#这是所有商店的默认配置
+#如果要修改某个商店的配置请复制本文将然后修改 Shop: ""
+Shop: "default"
+Layout:
+  - "#########"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "##B###C##"
+Layout-Edit:
+  - "####A####"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "##B#E#C##"
+#商品
+Commodity: "@"
+#创建按钮
+CreateItem: "A"
+#修改展示名按钮
+ReName: "E"
+#翻页按钮
+NextItem:
+  slot: "B"
+  #有下一页展示的物品
+  #物品的详细写法可以参考 https://github.com/CryptoMorin/XSeries/wiki/XItemStack
+  has:
+    material: "SPECTRAL_ARROW"
+    name: "§f下一页"
+  normal:
+    material: "ARROW"
+    name: "§7下一页"
+PreviousItem:
+  slot: "C"
+  has:
+    material: "SPECTRAL_ARROW"
+    name: "§f上一页"
+  normal:
+    material: "ARROW"
+    name: "§7上一页"
+OtherItem:
+  #这是其他物品按钮
+  #action里的是kether脚本
+  #https://kether.tabooproject.org/
+  "D":
+    item:
+      material: "SPECTRAL_ARROW"
+      name: "§c额外的按钮"
+    action:
+      left:
+        - command "say hi" as op
+      left_shift:
+        - command "say hi" as op
+      right:
+        - command "say hi" as op
+      right_shift:
+        - command "say hi" as op
+#购买和出售的方式
+InteractiveMode:
+  #可选模式 牌子 / 箱子
+  #SIGN CHEST
+  type: "CHEST"
+  ChestName: "正在浏览: {name}"
+  Layout:
+    - "####A####"
+    - "#B#C#D#E#"
+    - "#########"
+    - "#@@@@@@@#"
+    - "#@@@@@@@#"
+    - "##F###G##"
+  #购买需求的材料
+  Material: "@"
+  Commodity: "A"
+  Back:
+    slot: "B"
+    item:
+      material: "FEATHER"
+      name: "§a返回商店页面"
+  Quit:
+    slot: "E"
+    item:
+      material: "IRON_DOOR"
+      name: "§c关闭页面"
+  Buy:
+    slot: "C"
+    #不可购买时是否隐藏按钮
+    hide: true
+    item:
+      material: "DIAMOND"
+      name: "&a购买商品"
+      lore:
+        # money_type 或 money_type_show
+        - "&c&m商品原价: %rayshop_now_buy% &f(%rayshop_money_type_show%&f)/个"
+        - "&f商品单价: %rayshop_now_buy_discount% &f(%rayshop_money_type_show%&f)/个"
+        - " "
+        - "&7点击选择数量"
+  Sell:
+    slot: "D"
+    #不可购买时是否隐藏按钮
+    hide: true
+    item:
+      material: "GOLD_INGOT"
+      name: "&a出售商品"
+      lore:
+        - "&f商品单价:&f %rayshop_now_sell% &f(%rayshop_money_type_show%&f)/个"
+        - " "
+        - "&7点击选择数量"
+  NextItem:
+    slot: "F"
+    has:
+      material: "SPECTRAL_ARROW"
+      name: "§f下一页"
+    normal:
+      material: "ARROW"
+      name: "§7下一页"
+  PreviousItem:
+    slot: "G"
+    has:
+      material: "SPECTRAL_ARROW"
+      name: "§f上一页"
+    normal:
+      material: "ARROW"
+      name: "§7上一页"
+  OtherItem:
+    #这是其他物品按钮
+    #action里的是kether脚本
+    #https://kether.tabooproject.org/
+    "Z":
+      item:
+        material: "STAINED_GLASS_PANE"
+        name: "§c屏障"
+AmountUI:
+  type:
+    buy: "购买"
+    sell: "出售"
+  ui_name: "当前要{type}的数量 :{amount}"
+  Layout:
+    - "####A####"
+    - "#BFGHIJC#"
+    - "##D###E##"
+  Commodity: "A"
+  Back:
+    slot: "D"
+    item:
+      material: "STAINED_GLASS_PANE"
+      damage: 14
+      name: "§a返回商品界面"
+  Confirm:
+    slot: "E"
+    item:
+      material: "STAINED_GLASS_PANE"
+      damage: 5
+      name: "§a确认购买"
+  Clear:
+    slot: "B"
+    item:
+      material: "BUCKET"
+      name: "§f数值归零"
+  Max:
+    slot: "C"
+    item:
+      material: "CHEST"
+      name: "§f数值设置为最大"
+  AmountItem:
+    "F":
+      amount: 1
+      item:
+        material: "WOOL"
+        damage: 0
+        name: "§a编辑数量"
+        lore:
+          - "&a>&f 左键: &e+1"
+          - "&c>&f 右键: &6-1"
+    "G":
+      amount: 10
+      item:
+        material: "WOOL"
+        damage: 0
+        amount: 10
+        name: "§a编辑数量"
+        lore:
+          - "&a>&f 左键: &e+10"
+          - "&c>&f 右键: &6-10"
+    "H":
+      amount: 20
+      item:
+        material: "WOOL"
+        damage: 0
+        amount: 20
+        name: "§a编辑数量"
+        lore:
+          - "&a>&f 左键: &e+20"
+          - "&c>&f 右键: &6-20"
+    "I":
+      amount: 32
+      item:
+        material: "WOOL"
+        damage: 0
+        amount: 32
+        name: "§a编辑数量"
+        lore:
+          - "&a>&f 左键: &e+32"
+          - "&c>&f 右键: &6-32"
+    "J":
+      amount: 64
+      item:
+        material: "WOOL"
+        damage: 0
+        amount: 64
+        name: "§a编辑数量"
+        lore:
+          - "&a>&f 左键: &e+64"
+          - "&c>&f 右键: &6-64"
