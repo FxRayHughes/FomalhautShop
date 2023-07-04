@@ -18,33 +18,35 @@ import top.maplex.fomalhautshop.ui.edit.UIGoodsEdit.itemA
 object UIGoodsBuyEdit {
 
     fun open(player: Player, goods: ShopGoodsBaseData) {
-        player.openMenu<Basic>("编辑商品: ${goods.id} 购买模块") {
-            map(
-                "Q###A###Z",
-                "#B#C#D#E#",
-                "#F#G#H#I#",
-                "#########",
-            )
-            itemA(player, goods, 'A')
-            setMoney(player, goods, 'B')
-            setItem(player, goods, 'D')
-            setMoneyType(player, goods, 'C')
-            setGive(player, goods, 'E')
-            setDiscount(player, goods, 'F')
-            setPermission(player, goods, 'G')
-            setLimit(player, goods, 'H')
-            setScript(player, goods, 'I')
+        submit {
+            player.openMenu<Basic>("编辑商品: ${goods.id} 购买模块") {
+                map(
+                    "Q###A###Z",
+                    "#B#C#D#E#",
+                    "#F#G#H#I#",
+                    "#########",
+                )
+                itemA(player, goods, 'A')
+                setMoney(player, goods, 'B')
+                setItem(player, goods, 'D')
+                setMoneyType(player, goods, 'C')
+                setGive(player, goods, 'E')
+                setDiscount(player, goods, 'F')
+                setPermission(player, goods, 'G')
+                setLimit(player, goods, 'H')
+                setScript(player, goods, 'I')
 
-            set('Q', buildItem(XMaterial.OAK_DOOR) {
-                name = "&f返回"
-                colored()
-            }) {
-                player.closeInventory()
-                UIGoodsEdit.open(player, goods)
-            }
+                set('Q', buildItem(XMaterial.OAK_DOOR) {
+                    name = "&f返回"
+                    colored()
+                }) {
+                    player.closeInventory()
+                    UIGoodsEdit.open(player, goods)
+                }
 
-            onClose {
-                ShopReader.saveOne(goods)
+                onClose {
+                    ShopReader.saveOne(goods)
+                }
             }
         }
     }

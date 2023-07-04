@@ -66,7 +66,7 @@ object ShopOldReader {
             "ItemsAdder" -> "IA"
             "ItemSystem" -> "IS"
             "MMOItems" -> "MI"
-            "MythicMobs" -> "MM"
+            "MythicMobs", "Mythic" -> "MM"
             "SXItem" -> "SI"
             else -> string
         }

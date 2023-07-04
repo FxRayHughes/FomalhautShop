@@ -16,30 +16,32 @@ import top.maplex.fomalhautshop.ui.edit.UIGoodsEdit.itemA
 object UIGoodsSellEdit {
 
     fun open(player: Player, goods: ShopGoodsBaseData) {
-        player.openMenu<Basic>("编辑商品: ${goods.id} 收购模块") {
-            map(
-                "Q###A###Z",
-                "#B#C#D#E#",
-                "#F#G#H#I#",
-                "#########",
-            )
-            itemA(player, goods, 'A')
-            setMoney(player, goods, 'B')
-            setMoneyType(player, goods, 'C')
-            setPermission(player, goods, 'D')
-            setLimit(player, goods, 'E')
-            setScript(player, goods, 'F')
+        submit {
+            player.openMenu<Basic>("编辑商品: ${goods.id} 收购模块") {
+                map(
+                    "Q###A###Z",
+                    "#B#C#D#E#",
+                    "#F#G#H#I#",
+                    "#########",
+                )
+                itemA(player, goods, 'A')
+                setMoney(player, goods, 'B')
+                setMoneyType(player, goods, 'C')
+                setPermission(player, goods, 'D')
+                setLimit(player, goods, 'E')
+                setScript(player, goods, 'F')
 
-            set('Q', buildItem(XMaterial.OAK_DOOR) {
-                name = "&f返回"
-                colored()
-            }) {
-                player.closeInventory()
-                UIGoodsEdit.open(player, goods)
-            }
+                set('Q', buildItem(XMaterial.OAK_DOOR) {
+                    name = "&f返回"
+                    colored()
+                }) {
+                    player.closeInventory()
+                    UIGoodsEdit.open(player, goods)
+                }
 
-            onClose {
-                ShopReader.saveOne(goods)
+                onClose {
+                    ShopReader.saveOne(goods)
+                }
             }
         }
     }

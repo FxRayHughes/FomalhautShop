@@ -23,40 +23,42 @@ import top.maplex.fomalhautshop.utils.papi
 object UIGoodsEdit {
 
     fun openEditList(player: Player) {
-        player.openMenu<Linked<ShopGoodsBaseData>> {
-            elements {
-                ShopManager.goods
-            }
+        submit {
+            player.openMenu<Linked<ShopGoodsBaseData>> {
+                elements {
+                    ShopManager.goods
+                }
 
-            onGenerate { player, element, index, slot ->
-                element.showItem(player, false)
-            }
+                onGenerate { player, element, index, slot ->
+                    element.showItem(player, false)
+                }
 
-            onClick { event, element ->
-                player.closeInventory()
-                open(player, element)
-            }
-            rows(6)
-            slots(Slots.CENTER)
-            setNextPage(51) { page, hasNextPage ->
-                if (hasNextPage) {
-                    buildItem(XMaterial.SPECTRAL_ARROW) {
-                        name = "§f下一页"
-                    }
-                } else {
-                    buildItem(XMaterial.ARROW) {
-                        name = "§7下一页"
+                onClick { event, element ->
+                    player.closeInventory()
+                    open(player, element)
+                }
+                rows(6)
+                slots(Slots.CENTER)
+                setNextPage(51) { page, hasNextPage ->
+                    if (hasNextPage) {
+                        buildItem(XMaterial.SPECTRAL_ARROW) {
+                            name = "§f下一页"
+                        }
+                    } else {
+                        buildItem(XMaterial.ARROW) {
+                            name = "§7下一页"
+                        }
                     }
                 }
-            }
-            setPreviousPage(47) { page, hasPreviousPage ->
-                if (hasPreviousPage) {
-                    buildItem(XMaterial.SPECTRAL_ARROW) {
-                        name = "§f上一页"
-                    }
-                } else {
-                    buildItem(XMaterial.ARROW) {
-                        name = "§7上一页"
+                setPreviousPage(47) { page, hasPreviousPage ->
+                    if (hasPreviousPage) {
+                        buildItem(XMaterial.SPECTRAL_ARROW) {
+                            name = "§f上一页"
+                        }
+                    } else {
+                        buildItem(XMaterial.ARROW) {
+                            name = "§7上一页"
+                        }
                     }
                 }
             }

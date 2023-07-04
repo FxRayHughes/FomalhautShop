@@ -7,9 +7,10 @@ import org.bukkit.inventory.ItemStack
 import taboolib.module.chat.colored
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.sendLang
-import top.maplex.abolethcore.AbolethUtils
 import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.money.MoneyAPI
+import top.maplex.fomalhautshop.utils.editAboData
+import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
 
 @Serializable
@@ -41,7 +42,7 @@ data class ShopGoodsSellData(
             )
         )
         if (limit != -1) {
-            val buy = AbolethUtils.get(player.uniqueId, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
+            val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
             val can = limit - buy
             lore.addAll(
                 player.asLangTextList(
@@ -71,7 +72,7 @@ data class ShopGoodsSellData(
         }
         //判断限购状态
         if (limit != -1) {
-            val buy = AbolethUtils.get(player.uniqueId, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
+            val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
             if (buy >= limit) {
                 val can = limit - buy
                 player.sendLang("system-message-sell-not-limit", limit, buy, can)
@@ -101,7 +102,7 @@ data class ShopGoodsSellData(
         }
 
         if (limit != -1) {
-            AbolethUtils.edit(player.uniqueId, "FShop::limit::${limitId}", "+", amount)
+            editAboData(player, "FShop::limit::${limitId}", "+", amount)
         }
 
         (1..amount).forEach {
@@ -138,7 +139,7 @@ data class ShopGoodsSellData(
         itemStack.set("shop.sell.limitId", limitId)
         itemStack.set(
             "shop.sell.limitUse",
-            AbolethUtils.get(player.uniqueId, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
+            getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
         )
 
     }

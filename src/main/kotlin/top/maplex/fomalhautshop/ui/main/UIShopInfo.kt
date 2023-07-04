@@ -1,6 +1,7 @@
 package top.maplex.fomalhautshop.ui.main
 
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
@@ -18,8 +19,10 @@ object UIShopInfo {
     //显示shop的页面
     fun open(player: Player, shopManagerData: String, editor: Boolean = false) {
         UIReader.scriptConfig["open-${shopManagerData}"]?.eval(player)
-        player.openMenu<Linked<ShopGoodsBaseData>>(shopManagerData.colored()) {
-            init(shopManagerData, player, editor)
+        submit {
+            player.openMenu<Linked<ShopGoodsBaseData>>(shopManagerData.colored()) {
+                init(shopManagerData, player, editor)
+            }
         }
     }
 

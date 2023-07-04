@@ -1,12 +1,13 @@
 package top.maplex.fomalhautshop.data.goods
 
-import de.tr7zw.nbtapi.NBT
+
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Comment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.platform.compat.replacePlaceholder
-import taboolib.platform.util.*
+import taboolib.platform.util.asLangTextList
+import taboolib.platform.util.modifyLore
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.utils.set
 

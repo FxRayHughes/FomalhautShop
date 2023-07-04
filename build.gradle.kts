@@ -19,7 +19,7 @@ taboolib {
     install("platform-bukkit")
     install("expansion-command-helper")
     classifier = null
-    version = "6.0.11-13"
+    version = "6.0.11-18"
 }
 
 repositories {
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    taboo("ink.ptms:um:1.0.0-beta-18")
+    taboo("ink.ptms:um:1.0.0-beta-27")
     taboo("net.mamoe.yamlkt:yamlkt:0.13.0")
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11902:11902-minimize:mapped")
