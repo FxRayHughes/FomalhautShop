@@ -43,6 +43,26 @@ object ShopMainCommand {
         }
     }
 
+    @CommandBody(permission = "shop.open")
+    val openQuery = subCommand {
+        dynamic("商店名") {
+            suggestion<CommandSender>(uncheck = true) { sender, context ->
+                ShopManager.goods.map { it.group }.flattenList()
+            }
+            dynamic("查询关键字") {
+                player("目标玩家") {
+                    execute<CommandSender> { sender, context, argument ->
+                        Bukkit.getPlayer(context.player("目标玩家").uniqueId)
+                            ?.let { UIShopInfo.open(it, context["商店名"], false, context["查询关键字"]) }
+                    }
+                }
+                execute<Player> { sender, context, argument ->
+                    UIShopInfo.open(sender, context["商店名"], false, context["查询关键字"])
+                }
+            }
+        }
+    }
+
     @CommandBody(permission = "shop.buy")
     val buy = subCommand {
         dynamic("商品ID") {
@@ -89,7 +109,7 @@ object ShopMainCommand {
 
     @CommandBody(permission = "shop.reload")
     val reload = subCommand {
-        execute<Player> { sender, context, argument ->
+        execute<CommandSender> { sender, context, argument ->
             UIReader.load()
             MoneyAPI.moneyConfig.reload()
             FomalhautShop.config.reload()

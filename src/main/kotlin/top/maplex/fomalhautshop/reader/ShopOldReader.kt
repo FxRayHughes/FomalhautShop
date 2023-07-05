@@ -47,15 +47,6 @@ object ShopOldReader {
         )
     }
 
-    fun getMoneyType(string: String): String {
-        return when (string) {
-            "MONEY" -> "MONEY"
-            "POINT" -> "POINT"
-            "ITEM" -> "ITEM"
-            else -> "MONEY"
-        }
-    }
-
     fun ShopMaterialData.newItem(): String {
         return "[${newId(this.form)}] ${this.id} => ${this.amount}"
     }

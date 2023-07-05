@@ -7,6 +7,13 @@
 
 不允许分发修改版本
 
+![img.png](img.png)
+
+## 支持开发者
+https://afdian.net/a/Ray_Hughes
+
+## 文档
+http://ray_hughes.gitee.io/f-shop-doc/
 
 ## 功能
 + 出售

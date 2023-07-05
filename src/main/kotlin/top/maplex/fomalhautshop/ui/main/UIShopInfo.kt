@@ -22,30 +22,34 @@ import top.maplex.fomalhautshop.ui.inits
 object UIShopInfo {
 
     //显示shop的页面
-    fun open(player: Player, shopManagerData: String, editor: Boolean = false) {
+    fun open(player: Player, shopManagerData: String, editor: Boolean = false, query: String = "") {
         UIReader.scriptConfig["open-${shopManagerData}"]?.eval(player)
         submit {
             player.openMenu<Linked<ShopGoodsBaseData>>(shopManagerData.colored()) {
-                init(shopManagerData, player, editor)
+                init(shopManagerData, player, editor, query)
             }
         }
     }
 
-    private fun Linked<ShopGoodsBaseData>.init(data: String, player: Player, editor: Boolean) {
+    private fun Linked<ShopGoodsBaseData>.init(data: String, player: Player, editor: Boolean, query: String = "") {
         inits(data, player, editor)
         //
         elements {
-            ShopManager.goods.filter { it.group.contains(data) }.sortedBy { it.weight }
+            if (query.isNotEmpty()) {
+                ShopManager.goods.filter {
+                    it.group.contains(data) && (it.id.contains(query)
+                            || it.goodsItem.getShowName(player).contains(query))
+                }.sortedByDescending { it.weight }
+            } else {
+                ShopManager.goods.filter { it.group.contains(data) }.sortedByDescending { it.weight }
+            }
         }
         onGenerate { looker, element, index, slot ->
             return@onGenerate buildItem(element.showItem(looker)) {
 
                 if (element.shiny) {
-                    if (element.buy?.checkBuy(player, 1, false) == true || element.sell!!.checkSell(
-                            player,
-                            1,
-                            element.goodsItem
-                        )
+                    if (element.buy?.checkBuy(player, 1, false) == true
+                        || element.sell?.checkSell(player, 1, element.goodsItem) == true
                     ) {
                         shiny()
                     }

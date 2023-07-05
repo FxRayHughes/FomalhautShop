@@ -6,6 +6,8 @@ import net.mamoe.yamlkt.Comment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.chat.colored
+import taboolib.module.nms.ItemTagData
+import taboolib.module.nms.ItemTagList
 import taboolib.module.nms.getItemTag
 import taboolib.module.nms.getName
 import taboolib.platform.util.asLangText
@@ -217,6 +219,7 @@ data class ShopGoodsBuyData(
         itemStack.set("shop.buy.moneyGet", getMoney(player))
         itemStack.set("shop.buy.moneyType", moneyType)
         itemStack.set("shop.buy.moneyTypeShow", MoneyAPI.getName(moneyType))
+        itemStack.set("shop.buy.moneyHas", MoneyAPI.getMoney(player, moneyType))
         itemStack.set("shop.buy.discount", discount)
         itemStack.set("shop.buy.permission", permission)
         itemStack.set("shop.buy.items", items.joinToString(",") { ShopItemManager.getItem(it).getShowString(player) })
@@ -227,6 +230,17 @@ data class ShopGoodsBuyData(
             "shop.buy.limitUse",
             getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
         )
+        if (items.isNotEmpty()) {
+            val itemTag = itemStack.getItemTag()
+            val data = ItemTagList()
+            items.forEach {
+                NBT.itemStackToNBT(ShopItemManager.getItem(it).getItem(player)).toString().let { z ->
+                    data.add(ItemTagData(z))
+                }
+            }
+            itemTag.putDeep("shop.buy.itemsJson", data)
+            itemTag.saveTo(itemStack)
+        }
     }
 
 }

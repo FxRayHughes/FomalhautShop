@@ -45,7 +45,7 @@ object ItemSaveLib {
     //loadAllItem
     @Awake(LifeCycle.ENABLE)
     fun loadAllItem() {
-        val file = newFile(getDataFolder(), "save/").listFiles()
+        val file = newFile(getDataFolder(), "save/", folder = true, create = true).listFiles()
         if (file != null) {
             for (i in file) {
                 val itemStack = NBT.parseNBT(i.readText(StandardCharsets.UTF_8))
