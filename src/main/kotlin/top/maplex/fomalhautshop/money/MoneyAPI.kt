@@ -3,6 +3,7 @@ package top.maplex.fomalhautshop.money
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigFile
@@ -26,21 +27,23 @@ object MoneyAPI {
                 val eco = economy ?: return false
                 eco.withdrawPlayer(player, amount)
             } else {
-                when (moneyConfig.getString("${type}.type")) {
-                    "Int", "int", "INT" -> {
-                        moneyConfig.getStringList("${type}.take")
-                            .replace("<value>", amount.toInt().toString())
-                            .replace("<player>", player.name).forEach {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
-                            }
-                    }
+                submit {
+                    when (moneyConfig.getString("${type}.type")) {
+                        "Int", "int", "INT" -> {
+                            moneyConfig.getStringList("${type}.take")
+                                .replace("<value>", amount.toInt().toString())
+                                .replace("<player>", player.name).forEach {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
+                                }
+                        }
 
-                    else -> {
-                        moneyConfig.getStringList("${type}.take")
-                            .replace("<value>", amount.toString())
-                            .replace("<player>", player.name).forEach {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
-                            }
+                        else -> {
+                            moneyConfig.getStringList("${type}.take")
+                                .replace("<value>", amount.toString())
+                                .replace("<player>", player.name).forEach {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
+                                }
+                        }
                     }
                 }
             }
@@ -53,21 +56,23 @@ object MoneyAPI {
             val eco = economy ?: return
             eco.depositPlayer(player, amount)
         } else {
-            when (moneyConfig.getString("${type}.type")) {
-                "Int", "int", "INT" -> {
-                    moneyConfig.getStringList("${type}.add")
-                        .replace("<value>", amount.toInt().toString())
-                        .replace("<player>", player.name).forEach {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
-                        }
-                }
+            submit {
+                when (moneyConfig.getString("${type}.type")) {
+                    "Int", "int", "INT" -> {
+                        moneyConfig.getStringList("${type}.add")
+                            .replace("<value>", amount.toInt().toString())
+                            .replace("<player>", player.name).forEach {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
+                            }
+                    }
 
-                else -> {
-                    moneyConfig.getStringList("${type}.add")
-                        .replace("<value>", amount.toString())
-                        .replace("<player>", player.name).forEach {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
-                        }
+                    else -> {
+                        moneyConfig.getStringList("${type}.add")
+                            .replace("<value>", amount.toString())
+                            .replace("<player>", player.name).forEach {
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
+                            }
+                    }
                 }
             }
         }
@@ -78,7 +83,8 @@ object MoneyAPI {
             val eco = economy ?: return 0.0
             eco.getBalance(player)
         } else {
-            moneyConfig.getString("${type}.get")?.replace("<player>", player.name)
+            moneyConfig.getString("${type}.get")
+                ?.replace("<player>", player.name)
                 ?.replacePlaceholder(player)
                 ?.toDoubleOrNull() ?: 0.0
         }

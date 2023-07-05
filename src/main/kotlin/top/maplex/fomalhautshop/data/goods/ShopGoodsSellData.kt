@@ -9,6 +9,8 @@ import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.sendLang
 import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.money.MoneyAPI
+import top.maplex.fomalhautshop.money.MoneyAPI.replace
+import top.maplex.fomalhautshop.ui.eval
 import top.maplex.fomalhautshop.utils.editAboData
 import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
@@ -64,18 +66,22 @@ data class ShopGoodsSellData(
         return itemData.getNumber(player)
     }
 
-    fun checkSell(player: Player, amount: Int, itemData: ShopItemData): Boolean {
+    fun checkSell(player: Player, amount: Int, itemData: ShopItemData, eval: Boolean = false): Boolean {
         //判断权限
         if (permission != "shop.sell.default") {
-            player.sendLang("system-message-sell-not-permission", permission)
+            if (eval) {
+                player.sendLang("system-message-sell-not-permission", permission)
+            }
             return false
         }
         //判断限购状态
         if (limit != -1) {
             val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
-            if (buy >= limit) {
+            if (buy + amount > limit) {
                 val can = limit - buy
-                player.sendLang("system-message-sell-not-limit", limit, buy, can)
+                if (eval) {
+                    player.sendLang("system-message-sell-not-limit", limit, buy, can)
+                }
                 return false
             }
         }
@@ -83,12 +89,14 @@ data class ShopGoodsSellData(
         //判断物品数量
         hasNumber(player, itemData).let {
             if (it < amount * itemData.amount) {
-                player.sendLang(
-                    "system-message-sell-not-number",
-                    itemData.getShowName(player),
-                    amount * itemData.amount,
-                    it
-                )
+                if (eval) {
+                    player.sendLang(
+                        "system-message-sell-not-number",
+                        itemData.getShowName(player),
+                        amount * itemData.amount,
+                        it
+                    )
+                }
                 return false
             }
         }
@@ -97,7 +105,7 @@ data class ShopGoodsSellData(
     }
 
     fun evalSell(player: Player, amount: Int, itemData: ShopItemData, shopGoodsBaseData: ShopGoodsBaseData): Boolean {
-        if (!checkSell(player, amount, itemData)) {
+        if (!checkSell(player, amount, itemData, true)) {
             return false
         }
 
@@ -108,6 +116,12 @@ data class ShopGoodsSellData(
         (1..amount).forEach {
             itemData.take(player)
         }
+
+        script.apply {
+            replace("{action.amount}", amount.toString())
+            replace("{data.goods}", shopGoodsBaseData.name)
+            replace("{data.money}", (getMoney(player) * amount).toString())
+        }.eval(player)
 
         if (money > 0.0) {
             val needMoney = getMoney(player) * amount

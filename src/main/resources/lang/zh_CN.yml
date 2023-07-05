@@ -27,13 +27,15 @@ shop-ui-buy-discount:
   - '&c&m原价: {0} &f({1})/个'
 shop-ui-buy:
   - '&7出售价: &f{0} ({1})/个'
-  - '&8左键购买'
+  - '&8左键购买一个'
+  - '&8Shift+左键购买大量'
 shop-ui-buyItem-info: '&f- {0} &fX{1}'
 shop-ui-buyItem-title:
   - '&7购买物品需求:'
 shop-ui-sell:
   - '&7回收价: &f{0} ({1})/个'
-  - '&8右键出售 (&7最大{2}&8)'
+  - '&8右键出售一个 (&7最大{2}&8)'
+  - '&8Shift+右键出售大量'
 shop-ui-sell-limit:
   - '&7回收限制: &f{1}/{0}件 &8({2})'
 shop-ui-edit-normal:

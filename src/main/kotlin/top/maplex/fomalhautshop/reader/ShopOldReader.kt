@@ -33,7 +33,7 @@ object ShopOldReader {
         return ShopGoodsBaseData(
             this.id ?: UUID.randomUUID().toString(),
             mutableListOf(), this.showName,
-            goods, 0, this.info.toMutableList(),
+            goods, 0, true, this.info.toMutableList(),
             ShopGoodsBuyData(
                 true, this.price, runCatching { this.moneyType }.getOrNull() ?: "Vault",
                 items = this.buyItems?.map { it.newItem() }?.toMutableList() ?: mutableListOf(),

@@ -14,7 +14,9 @@ object ShopSXItem : ShopItem {
 
     @Awake(LifeCycle.ENABLE)
     fun init() {
-        registerItem()
+        if (Bukkit.getPluginManager().getPlugin("SX-Item") != null) {
+            registerItem()
+        }
     }
 
     private val itemManager by lazy {

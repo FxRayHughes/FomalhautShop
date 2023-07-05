@@ -8,6 +8,7 @@ import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
 import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
+import top.maplex.fomalhautshop.money.MoneyAPI
 import top.maplex.fomalhautshop.reader.ShopOldReader
 import top.maplex.fomalhautshop.reader.ShopReader
 import top.maplex.fomalhautshop.ui.UIReader
@@ -19,12 +20,12 @@ import top.maplex.fomalhautshop.utils.flattenList
 @CommandHeader(name = "fomalhautShop", aliases = ["fs", "shop"], permission = "shop.use")
 object ShopMainCommand {
 
-    @CommandBody
+    @CommandBody(permission = "shop.use")
     val main = mainCommand {
         createHelper()
     }
 
-    @CommandBody
+    @CommandBody(permission = "shop.open")
     val open = subCommand {
         dynamic("商店名") {
             suggestion<CommandSender>(uncheck = true) { sender, context ->
@@ -90,11 +91,13 @@ object ShopMainCommand {
     val reload = subCommand {
         execute<Player> { sender, context, argument ->
             UIReader.load()
+            MoneyAPI.moneyConfig.reload()
+            FomalhautShop.config.reload()
             sender.sendMessage("§a重载成功")
         }
     }
 
-    @CommandBody
+    @CommandBody(permission = "shop.edit")
     val edit = subCommand {
         dynamic("Shop") {
             suggestion<CommandSender>(uncheck = true) { sender, context ->
@@ -116,14 +119,14 @@ object ShopMainCommand {
         }
     }
 
-    @CommandBody
+    @CommandBody(permission = "shop.edit")
     val editList = subCommand {
         execute<Player> { sender, context, argument ->
             UIGoodsEdit.openEditList(sender)
         }
     }
 
-    @CommandBody
+    @CommandBody(permission = "shop.get")
     val get = subCommand {
         dynamic("Shop") {
             suggestion<CommandSender> { sender, context ->
@@ -137,7 +140,7 @@ object ShopMainCommand {
         }
     }
 
-    @CommandBody
+    @CommandBody(permission = "shop.old")
     val fromOld = subCommand {
         execute<CommandSender> { sender, context, argument ->
             ShopOldReader.eval()

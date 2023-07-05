@@ -1,5 +1,6 @@
 package top.maplex.fomalhautshop.data.goods
 
+import de.tr7zw.nbtapi.NBT
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Comment
 import org.bukkit.entity.Player
@@ -59,7 +60,7 @@ data class ShopGoodsBuyData(
                 )
             }
         }
-        if (discount != "Null") {
+        if (discount != "Null" && getMoney(player) != money) {
             lore.addAll(
                 player.asLangTextList(
                     "shop-ui-buy-discount",
@@ -97,7 +98,7 @@ data class ShopGoodsBuyData(
         return DiscountManager.get(player, discount, money, moneyType)
     }
 
-    fun checkBuy(player: Player, amount: Int): Boolean {
+    fun checkBuy(player: Player, amount: Int, eval: Boolean = false): Boolean {
         //判断权限
         if (permission != "shop.buy.default") {
             player.sendLang("system-message-buy-not-permission", permission)
@@ -106,9 +107,11 @@ data class ShopGoodsBuyData(
         //判断限购状态
         if (limit != -1) {
             val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
-            if (buy >= limit) {
+            if (buy + amount > limit) {
                 val can = limit - buy
-                player.sendLang("system-message-buy-not-limit", limit, buy, can)
+                if (eval) {
+                    player.sendLang("system-message-buy-not-limit", limit, buy, can)
+                }
                 return false
             }
         }
@@ -119,7 +122,9 @@ data class ShopGoodsBuyData(
             val needMoney = getMoney(player) * amount
             if (needMoney > 0.0 && has < needMoney) {
                 val need = needMoney - has
-                player.sendLang("system-message-buy-not-money", need, MoneyAPI.getName(moneyType))
+                if (eval) {
+                    player.sendLang("system-message-buy-not-money", need, MoneyAPI.getName(moneyType))
+                }
                 return false
             }
         }
@@ -134,7 +139,9 @@ data class ShopGoodsBuyData(
                     color + data.getItem(player, sup[1])
                         ?.getName(player) + "" + "X ${sup[3].toIntOrNull() ?: 1}"
                 }
-                player.sendLang("system-message-buy-not-item", names.joinToString("\n"))
+                if (eval) {
+                    player.sendLang("system-message-buy-not-item", names.joinToString("\n"))
+                }
                 return false
             }
         }
@@ -142,7 +149,7 @@ data class ShopGoodsBuyData(
     }
 
     fun evalBuy(player: Player, amount: Int, goodsItem: ShopItemData, shopGoodsBaseData: ShopGoodsBaseData): Boolean {
-        if (!checkBuy(player, amount)) {
+        if (!checkBuy(player, amount, true)) {
             return false
         }
 
@@ -164,10 +171,8 @@ data class ShopGoodsBuyData(
         }
         script.apply {
             replace("{action.amount}", amount.toString())
-            shopGoodsBaseData.showItem(player).getItemTag().forEach {
-                println("${it.key}: ${it.value.asString()}")
-            }
-            player.giveItem(shopGoodsBaseData.showItem(player))
+            replace("{data.goods}", shopGoodsBaseData.name)
+            replace("{data.money}", (getMoney(player) * amount).toString())
         }.eval(player)
 
 

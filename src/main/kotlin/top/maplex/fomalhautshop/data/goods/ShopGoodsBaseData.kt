@@ -3,11 +3,15 @@ package top.maplex.fomalhautshop.data.goods
 
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Comment
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import taboolib.platform.compat.replacePlaceholder
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.modifyLore
+import taboolib.platform.util.modifyMeta
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.utils.set
 
@@ -23,6 +27,8 @@ data class ShopGoodsBaseData(
     var goods: String,
     @Comment("显示优先级 数字越大排行越前")
     var weight: Int = 0,
+    @Comment("在可购买/可出售时是否显示附魔效果")
+    var shiny: Boolean = true,
     @Comment("这代表商品的描述 会在购买页面单独展示")
     var info: MutableList<String> = mutableListOf(),
     @Comment("物品购买策略")
@@ -33,7 +39,7 @@ data class ShopGoodsBaseData(
     var path: String = ""
 ) {
 
-    private val goodsItem by lazy { ShopItemManager.getItem(goods) }
+    val goodsItem by lazy { ShopItemManager.getItem(goods) }
 
     fun showItem(player: Player, editor: Boolean = false): ItemStack {
         val item = ShopItemManager.getItem(goods).getItem(player)
@@ -72,14 +78,14 @@ data class ShopGoodsBaseData(
     }
 
     fun buy(player: Player, amount: Int) {
-        if (buy != null && buy!!.checkBuy(player, amount)) {
+        if (buy != null && buy!!.checkBuy(player, amount, true)) {
             buy!!.evalBuy(player, amount, goodsItem, this)
             buy!!.sendBuyMessage(player, amount, name)
         }
     }
 
     fun sell(player: Player, amount: Int) {
-        if (sell != null && sell!!.checkSell(player, amount, goodsItem)) {
+        if (sell != null && sell!!.checkSell(player, amount, goodsItem, true)) {
             sell!!.evalSell(player, amount, goodsItem, this)
             sell!!.sendSellMessage(player, amount, name)
         }

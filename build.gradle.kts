@@ -18,6 +18,7 @@ taboolib {
     install("module-ui")
     install("platform-bukkit")
     install("expansion-command-helper")
+    relocate("ink.ptms.um","top.maplex.fomalhautshop.um")
     classifier = null
     version = "6.0.11-18"
 }

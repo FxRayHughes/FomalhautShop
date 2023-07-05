@@ -2,11 +2,9 @@ package top.maplex.fomalhautshop.ui.edit
 
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import ray.mintcat.shop.data.materials.MaterialFeed
 import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
-import taboolib.module.nms.getName
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Basic
 import taboolib.module.ui.type.Linked
@@ -66,8 +64,8 @@ object UIGoodsEdit {
     }
 
     fun open(player: Player, goods: ShopGoodsBaseData) {
-        player.closeInventory()
         submit {
+            player.closeInventory()
             player.openMenu<Basic>("编辑模式: ${goods.id}") {
                 map(
                     "Q###A###Z",
@@ -82,6 +80,7 @@ object UIGoodsEdit {
                 itemInfo(player, goods, 'E')
                 itemBuy(player, goods, 'F')
                 itemSell(player, goods, 'G')
+                setShiny(player, goods, 'H')
                 onClose {
                     ShopReader.saveOne(goods)
                 }
@@ -90,12 +89,27 @@ object UIGoodsEdit {
 
     }
 
+    private fun Basic.setShiny(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(if (goods.shiny) XMaterial.TORCH else XMaterial.REDSTONE_TORCH) {
+            name = "&f是否高亮显示"
+            lore.add("&f当前状态: ${if (goods.shiny) "&a是" else "&c否"}")
+            lore.add("&f左键切换状态")
+            colored()
+        }) {
+            player.closeInventory()
+            goods.shiny = !goods.shiny
+            submit(delay = 1) {
+                open(player, goods)
+            }
+        }
+    }
+
     private fun Basic.itemBuy(player: Player, goods: ShopGoodsBaseData, c: Char) {
         set(c, buildItem(XMaterial.CHEST) {
             name = "&f购买原件"
             lore.add("&f当前状态: ${if (goods.buy == null || !goods.buy!!.enable) "&c未启用" else "&a已启用"}")
             lore.add("&f左键切换状态")
-            lore.add("&f左键编辑购买逻辑")
+            lore.add("&f右键编辑购买逻辑")
             colored()
         }) {
             player.closeInventory()
@@ -110,6 +124,9 @@ object UIGoodsEdit {
                 return@set
             } else {
                 submit(delay = 1) {
+                    if (goods.buy == null) {
+                        goods.buy = ShopGoodsBuyData(false)
+                    }
                     UIGoodsBuyEdit.open(player, goods)
                 }
             }
@@ -121,7 +138,7 @@ object UIGoodsEdit {
             name = "&f出售原件"
             lore.add("&f当前状态: ${if (goods.sell == null || !goods.sell!!.enable) "&c未启用" else "&a已启用"}")
             lore.add("&f左键切换状态")
-            lore.add("&f左键编辑出售逻辑")
+            lore.add("&f右键编辑出售逻辑")
             colored()
         }) {
             player.closeInventory()
@@ -136,6 +153,9 @@ object UIGoodsEdit {
                 return@set
             } else {
                 submit(delay = 1) {
+                    if (goods.sell == null) {
+                        goods.sell = ShopGoodsSellData()
+                    }
                     UIGoodsSellEdit.open(player, goods)
                 }
             }
