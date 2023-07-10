@@ -81,12 +81,27 @@ object UIGoodsEdit {
                 itemBuy(player, goods, 'F')
                 itemSell(player, goods, 'G')
                 setShiny(player, goods, 'H')
+                remove(player, goods, 'I')
                 onClose {
                     ShopReader.saveOne(goods)
                 }
             }
         }
 
+    }
+
+    private fun Basic.remove(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(XMaterial.BARRIER) {
+            name = "&f删除商店"
+            lore.add("&f点击删除")
+            colored()
+        }) {
+            player.closeInventory()
+            goods.delete()
+            submit(delay = 1) {
+                openEditList(player)
+            }
+        }
     }
 
     private fun Basic.setShiny(player: Player, goods: ShopGoodsBaseData, char: Char) {
@@ -196,6 +211,7 @@ object UIGoodsEdit {
                     }
                 } else {
                     goods.weight = weight
+                    player.sendLang("chat-message-input-edit-set-good-success", weight)
                     submit(delay = 1) {
                         open(player, goods)
                     }

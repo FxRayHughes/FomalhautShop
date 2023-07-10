@@ -152,7 +152,7 @@ object UIGoodsBuyEdit {
                 rows(6)
                 onBuild { player, inventory ->
                     goods.buy!!.items.forEach {
-                        inventory.addItem(ShopItemManager.getItem(it).getItem(player))
+                        inventory.addItem(ShopItemManager.getItem(it).getItemAmount(player))
                     }
                 }
                 onClose {

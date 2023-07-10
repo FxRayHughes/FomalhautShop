@@ -11,35 +11,33 @@ import taboolib.platform.util.buildItem
 import top.maplex.fomalhautshop.utils.asChar
 import top.maplex.fomalhautshop.utils.papi
 
-fun <T> Linked<T>.inits(data: String, player: Player, edit: Boolean) {
+fun <T> Linked<T>.inits(data: String, player: Player, edit: Boolean = false) {
     val config = UIReader.getUIConfig(data)
-    if (edit) {
-        map(*config.getStringList("Layout-Edit").toTypedArray())
-    } else {
-        map(*config.getStringList("Layout").toTypedArray())
-    }
+    map(*config.getStringList("Layout").toTypedArray())
     config.getString("Commodity")?.asChar()?.let { slotsBy(it) } ?: slotsBy('@')
-    val nextChar = config.getString("NextItem.slot")?.asChar() ?: 'B'
-    this.setNextPage(getFirstSlot(nextChar)) { page, hasNextPage ->
-        if (hasNextPage) {
-            config.getItemStack("NextItem.has").papi(player) ?: buildItem(XMaterial.SPECTRAL_ARROW) {
-                name = "§f下一页"
-            }
-        } else {
-            config.getItemStack("NextItem.normal").papi(player) ?: buildItem(XMaterial.ARROW) {
-                name = "§7下一页"
+    config.getString("NextItem.slot")?.asChar()?.let { nextChar ->
+        this.setNextPage(getFirstSlot(nextChar)) { page, hasNextPage ->
+            if (hasNextPage) {
+                config.getItemStack("NextItem.has").papi(player) ?: buildItem(XMaterial.SPECTRAL_ARROW) {
+                    name = "§f下一页"
+                }
+            } else {
+                config.getItemStack("NextItem.normal").papi(player) ?: buildItem(XMaterial.ARROW) {
+                    name = "§7下一页"
+                }
             }
         }
     }
-    val previoustChar = config.getString("PreviousItem.slot")?.asChar() ?: 'C'
-    this.setPreviousPage(getFirstSlot(previoustChar)) { page, hasPreviousPage ->
-        if (hasPreviousPage) {
-            config.getItemStack("PreviousItem.has").papi(player) ?: buildItem(XMaterial.SPECTRAL_ARROW) {
-                name = "§f上一页"
-            }
-        } else {
-            config.getItemStack("PreviousItem.normal").papi(player) ?: buildItem(XMaterial.ARROW) {
-                name = "§7上一页"
+    config.getString("PreviousItem.slot")?.asChar()?.let { previoustChar ->
+        this.setPreviousPage(getFirstSlot(previoustChar)) { page, hasPreviousPage ->
+            if (hasPreviousPage) {
+                config.getItemStack("PreviousItem.has").papi(player) ?: buildItem(XMaterial.SPECTRAL_ARROW) {
+                    name = "§f上一页"
+                }
+            } else {
+                config.getItemStack("PreviousItem.normal").papi(player) ?: buildItem(XMaterial.ARROW) {
+                    name = "§7上一页"
+                }
             }
         }
     }

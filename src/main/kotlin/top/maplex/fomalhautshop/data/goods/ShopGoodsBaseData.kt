@@ -8,12 +8,19 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import taboolib.common.io.newFile
+import taboolib.common.platform.function.getDataFolder
+import taboolib.common.platform.function.submit
+import taboolib.module.chat.colored
 import taboolib.platform.compat.replacePlaceholder
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.modifyLore
 import taboolib.platform.util.modifyMeta
+import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.utils.set
+import java.io.File
+import java.nio.charset.StandardCharsets
 
 @Serializable
 data class ShopGoodsBaseData(
@@ -42,7 +49,7 @@ data class ShopGoodsBaseData(
     val goodsItem by lazy { ShopItemManager.getItem(goods) }
 
     fun showItem(player: Player, editor: Boolean = false): ItemStack {
-        val item = ShopItemManager.getItem(goods).getItem(player)
+        val item = ShopItemManager.getItem(goods).getItemAmount(player).clone()
         item.set("shop.id", id)
         item.set("shop.group", group.joinToString(","))
         item.set("shop.name", name)
@@ -59,6 +66,9 @@ data class ShopGoodsBaseData(
             item.set("shop.buy.enable", false)
         }
         return item.apply {
+            item.modifyMeta<ItemMeta> {
+                setDisplayName(getShowName(player))
+            }
             //增加Info
             modifyLore {
                 addAll(info.map { "&f${it}".replacePlaceholder(player) })
@@ -70,6 +80,9 @@ data class ShopGoodsBaseData(
                 if (sell != null && sell!!.enable) {
                     addAll(sell!!.getSellLore(player, goodsItem))
                 }
+
+                addAll(player.asLangTextList("shop-ui-goods-info"))
+
                 if (editor) {
                     addAll(player.asLangTextList("shop-ui-edit-normal", id))
                 }
@@ -77,17 +90,25 @@ data class ShopGoodsBaseData(
         }
     }
 
+    fun getShowName(player: Player): String {
+        return if (name.isEmpty()) {
+            goodsItem.getShowName(player)
+        } else {
+            name.colored()
+        }
+    }
+
     fun buy(player: Player, amount: Int) {
-        if (buy != null && buy!!.checkBuy(player, amount, true)) {
+        if (buy != null && buy!!.enable && buy!!.checkBuy(player, amount, true)) {
             buy!!.evalBuy(player, amount, goodsItem, this)
-            buy!!.sendBuyMessage(player, amount, name)
+            buy!!.sendBuyMessage(player, amount, getShowName(player))
         }
     }
 
     fun sell(player: Player, amount: Int) {
-        if (sell != null && sell!!.checkSell(player, amount, goodsItem, true)) {
+        if (sell != null && sell!!.enable && sell!!.checkSell(player, amount, goodsItem, true)) {
             sell!!.evalSell(player, amount, goodsItem, this)
-            sell!!.sendSellMessage(player, amount, name)
+            sell!!.sendSellMessage(player, amount, getShowName(player))
         }
     }
 
@@ -102,6 +123,38 @@ data class ShopGoodsBaseData(
         }
 
         return true
+    }
+
+    fun delete() {
+        submit {
+            ShopManager.goods.remove(this@ShopGoodsBaseData)
+
+            newFile(getDataFolder(), path, create = true).let {
+                if (it.exists()) {
+                    //YYYY-MM-DD HH:mm:ss
+                    val time: String = it.lastModified().let { time ->
+                        val date = java.util.Date(time)
+                        val sdf = java.text.SimpleDateFormat("yyyy年MM月dd日 H-mm-ss")
+                        sdf.format(date)
+                    }
+                    File(getDataFolder(), "shops/noLoad/delete").let { f ->
+                        if (!f.exists()) {
+                            f.mkdirs()
+                        }
+                        File(f, "${time}-${id}.yml").apply {
+                            if (!exists()) {
+                                createNewFile()
+                            }
+                            writeText(
+                                it.readText(StandardCharsets.UTF_8),
+                                StandardCharsets.UTF_8
+                            )
+                        }
+                    }
+                    it.delete()
+                }
+            }
+        }
     }
 
 }

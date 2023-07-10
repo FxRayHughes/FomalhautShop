@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Comment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
 import taboolib.module.nms.ItemTagData
 import taboolib.module.nms.ItemTagList
@@ -23,6 +24,7 @@ import top.maplex.fomalhautshop.ui.eval
 import top.maplex.fomalhautshop.utils.editAboData
 import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
+import java.lang.StringBuilder
 
 @Serializable
 data class ShopGoodsBuyData(
@@ -71,9 +73,18 @@ data class ShopGoodsBuyData(
                 )
             )
         }
+        if (money > 0.0) {
+            lore.addAll(
+                player.asLangTextList(
+                    "shop-ui-buy-money",
+                    getMoney(player),
+                    MoneyAPI.getName(moneyType)
+                )
+            )
+        }
         lore.addAll(
             player.asLangTextList(
-                "shop-ui-buy",
+                "shop-ui-buy-action",
                 getMoney(player),
                 MoneyAPI.getName(moneyType)
             )
@@ -133,16 +144,26 @@ data class ShopGoodsBuyData(
 
         //判断物品是否满足
         if (items.isNotEmpty()) {
-            if (!ShopItemManager.check(player, items)) {
-                val names = items.map {
-                    val data = ShopItemManager.getData(it)
-                    val sup = it.split(" ")
-                    val color = if (data.isMeet(player, sup[1], sup[3].toIntOrNull() ?: 1)) "§a" else "§c"
-                    color + data.getItem(player, sup[1])
-                        ?.getName(player) + "" + "X ${sup[3].toIntOrNull() ?: 1}"
+            val itemData = items.map {
+                ShopItemData(it).apply {
+                    this.amount = this.amount * amount
                 }
+            }
+            var can = true
+            val names = StringBuilder()
+            itemData.forEach {
+                if (!it.isMeet(player)) {
+                    can = false
+                    names.append("&c")
+                        .append(it.getShowName(player))
+                        .append("&f X ")
+                        .append(it.amount)
+                        .append("\n")
+                }
+            }
+            if (!can) {
                 if (eval) {
-                    player.sendLang("system-message-buy-not-item", names.joinToString("\n"))
+                    player.sendLang("system-message-buy-not-item", names.toString().colored())
                 }
                 return false
             }
@@ -165,16 +186,25 @@ data class ShopGoodsBuyData(
         }
 
         if (items.isNotEmpty()) {
-            ShopItemManager.take(player, items)
+            items.map {
+                ShopItemData(it).apply {
+                    this.amount = this.amount * amount
+                }
+            }.forEach {
+                it.take(player)
+            }
         }
 
         if (give) {
-            player.giveItem(goodsItem.getItem(player), amount)
+            submit {
+                val itemAmount = goodsItem.amount
+                player.giveItem(goodsItem.getItem(player), amount * itemAmount)
+            }
         }
-        script.apply {
-            replace("{action.amount}", amount.toString())
-            replace("{data.goods}", shopGoodsBaseData.name)
-            replace("{data.money}", (getMoney(player) * amount).toString())
+        script.map {
+            it.replace("<action_amount>", amount.toString())
+                .replace("{data.goods}", shopGoodsBaseData.name)
+                .replace("{data.money}", (getMoney(player) * amount).toString())
         }.eval(player)
 
 
@@ -194,7 +224,7 @@ data class ShopGoodsBuyData(
         }
         val itemTable = items.map {
             val sup = it.split(" ")
-            "${ShopItemManager.getItem(it).getShowName(player)} X ${sup[3]}"
+            "${ShopItemManager.getItem(it).getShowName(player)} X ${(sup[3].toInt() * amount)}"
         }
         if (money <= 0.0 && items.isNotEmpty()) {
             player.sendLang(
@@ -219,6 +249,7 @@ data class ShopGoodsBuyData(
         itemStack.set("shop.buy.moneyGet", getMoney(player))
         itemStack.set("shop.buy.moneyType", moneyType)
         itemStack.set("shop.buy.moneyTypeShow", MoneyAPI.getName(moneyType))
+        itemStack.set("shop.buy.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
         itemStack.set("shop.buy.moneyHas", MoneyAPI.getMoney(player, moneyType))
         itemStack.set("shop.buy.discount", discount)
         itemStack.set("shop.buy.permission", permission)
@@ -231,15 +262,16 @@ data class ShopGoodsBuyData(
             getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
         )
         if (items.isNotEmpty()) {
-            val itemTag = itemStack.getItemTag()
-            val data = ItemTagList()
+            val builder = StringBuilder()
             items.forEach {
                 NBT.itemStackToNBT(ShopItemManager.getItem(it).getItem(player)).toString().let { z ->
-                    data.add(ItemTagData(z))
+                    builder.append(z)
+                    builder.append("[FShop]")
                 }
             }
-            itemTag.putDeep("shop.buy.itemsJson", data)
-            itemTag.saveTo(itemStack)
+            itemStack.set("shop.buy.itemsJson", builder.toString())
+        } else {
+            itemStack.set("shop.buy.itemsJson", "none")
         }
     }
 

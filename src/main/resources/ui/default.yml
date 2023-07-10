@@ -9,13 +9,6 @@ Layout:
   - "#@@@@@@@#"
   - "#@@@@@@@#"
   - "##B###C##"
-Layout-Edit:
-  - "####A####"
-  - "#@@@@@@@#"
-  - "#@@@@@@@#"
-  - "#@@@@@@@#"
-  - "#@@@@@@@#"
-  - "##B#E#C##"
 #商品
 Commodity: "@"
 #创建按钮
@@ -58,15 +51,12 @@ OtherItem:
         - command "say hi" as op
       right_shift:
         - command "say hi" as op
-#购买和出售的方式
+
 InteractiveMode:
-  #可选模式 牌子 / 箱子
-  #SIGN CHEST
-  type: "CHEST"
   ChestName: "正在浏览: {name}"
   Layout:
-    - "####A####"
-    - "#B#C#D#E#"
+    - "B###A###E"
+    - "###C#D###"
     - "#########"
     - "#@@@@@@@#"
     - "#@@@@@@@#"
@@ -91,12 +81,6 @@ InteractiveMode:
     item:
       material: "DIAMOND"
       name: "&a购买商品"
-      lore:
-        # money_type 或 money_type_show
-        - "&c&m商品原价: %rayshop_now_buy% &f(%rayshop_money_type_show%&f)/个"
-        - "&f商品单价: %rayshop_now_buy_discount% &f(%rayshop_money_type_show%&f)/个"
-        - " "
-        - "&7点击选择数量"
   Sell:
     slot: "D"
     #不可购买时是否隐藏按钮
@@ -104,10 +88,6 @@ InteractiveMode:
     item:
       material: "GOLD_INGOT"
       name: "&a出售商品"
-      lore:
-        - "&f商品单价:&f %rayshop_now_sell% &f(%rayshop_money_type_show%&f)/个"
-        - " "
-        - "&7点击选择数量"
   NextItem:
     slot: "F"
     has:
@@ -132,85 +112,3 @@ InteractiveMode:
       item:
         material: "STAINED_GLASS_PANE"
         name: "§c屏障"
-AmountUI:
-  type:
-    buy: "购买"
-    sell: "出售"
-  ui_name: "当前要{type}的数量 :{amount}"
-  Layout:
-    - "####A####"
-    - "#BFGHIJC#"
-    - "##D###E##"
-  Commodity: "A"
-  Back:
-    slot: "D"
-    item:
-      material: "STAINED_GLASS_PANE"
-      damage: 14
-      name: "§a返回商品界面"
-  Confirm:
-    slot: "E"
-    item:
-      material: "STAINED_GLASS_PANE"
-      damage: 5
-      name: "§a确认购买"
-  Clear:
-    slot: "B"
-    item:
-      material: "BUCKET"
-      name: "§f数值归零"
-  Max:
-    slot: "C"
-    item:
-      material: "CHEST"
-      name: "§f数值设置为最大"
-  AmountItem:
-    "F":
-      amount: 1
-      item:
-        material: "WOOL"
-        damage: 0
-        name: "§a编辑数量"
-        lore:
-          - "&a>&f 左键: &e+1"
-          - "&c>&f 右键: &6-1"
-    "G":
-      amount: 10
-      item:
-        material: "WOOL"
-        damage: 0
-        amount: 10
-        name: "§a编辑数量"
-        lore:
-          - "&a>&f 左键: &e+10"
-          - "&c>&f 右键: &6-10"
-    "H":
-      amount: 20
-      item:
-        material: "WOOL"
-        damage: 0
-        amount: 20
-        name: "§a编辑数量"
-        lore:
-          - "&a>&f 左键: &e+20"
-          - "&c>&f 右键: &6-20"
-    "I":
-      amount: 32
-      item:
-        material: "WOOL"
-        damage: 0
-        amount: 32
-        name: "§a编辑数量"
-        lore:
-          - "&a>&f 左键: &e+32"
-          - "&c>&f 右键: &6-32"
-    "J":
-      amount: 64
-      item:
-        material: "WOOL"
-        damage: 0
-        amount: 64
-        name: "§a编辑数量"
-        lore:
-          - "&a>&f 左键: &e+64"
-          - "&c>&f 右键: &6-64"

@@ -52,7 +52,7 @@ object UIReader {
         loadFile(File(getDataFolder(), "shops/"))
         newFolder(getDataFolder(),"shops/noLoad",create = true)
         files.forEach {
-            if (it.path.startsWith("plugins\\FomalhautShop\\shops\\old")) {
+            if (it.path.startsWith("plugins\\FomalhautShop\\shops\\noLoad")) {
                 return@forEach
             }
             ShopReader.loadData(it)

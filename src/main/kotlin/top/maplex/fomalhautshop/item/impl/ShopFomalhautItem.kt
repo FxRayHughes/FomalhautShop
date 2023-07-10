@@ -22,11 +22,11 @@ object ShopFomalhautItem : ShopItem {
     }
 
     override fun getItem(player: Player, id: String): ItemStack? {
-        return ItemSaveLib.getItem(id)
+        return ItemSaveLib.getItem(id)?.clone()
     }
 
     override fun getItemId(itemStack: ItemStack): String {
-        if (ItemSaveLib.items.isEmpty()){
+        if (ItemSaveLib.items.isEmpty()) {
             return "none"
         }
         return ItemSaveLib.items.firstNotNullOf { (id, item) ->

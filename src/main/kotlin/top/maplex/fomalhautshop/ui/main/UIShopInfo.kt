@@ -2,6 +2,7 @@ package top.maplex.fomalhautshop.ui.main
 
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.platform.function.submit
@@ -45,11 +46,15 @@ object UIShopInfo {
             }
         }
         onGenerate { looker, element, index, slot ->
-            return@onGenerate buildItem(element.showItem(looker)) {
+            return@onGenerate buildItem(element.showItem(looker).clone()) {
 
                 if (element.shiny) {
-                    if (element.buy?.checkBuy(player, 1, false) == true
-                        || element.sell?.checkSell(player, 1, element.goodsItem) == true
+                    if ((element.buy?.enable == true && element.buy?.checkBuy(player, 1, false) == true)
+                        || (element.sell?.enable == true && element.sell?.checkSell(
+                            player,
+                            1,
+                            element.goodsItem
+                        ) == true)
                     ) {
                         shiny()
                     }
@@ -58,54 +63,66 @@ object UIShopInfo {
             }
         }
         onClick { event, element ->
-            //购买
-            player.closeInventory()
-            if (event.clickEvent().isLeftClick && event.clickEvent().isShiftClick) {
-                player.sendLang("chat-message-input-buy", element.name)
-                player.nextChat {
-                    if (it.contains("exit")) {
-                        open(player, data, editor)
-                        return@nextChat
-                    }
-                    val amount = it.toIntOrNull()
-                    if (amount == null) {
-                        player.sendLang("chat-message-input-error")
-                        open(player, data, editor)
-                        return@nextChat
-                    }
-                    element.buy(player, amount)
-                    open(player, data, editor)
-                }
-                return@onClick
-            }
-            if (event.clickEvent().isLeftClick) {
-                element.buy(player, 1)
-                open(player, data, editor)
-                return@onClick
-            }
 
-            if (event.clickEvent().isRightClick && event.clickEvent().isShiftClick) {
-                player.sendLang("chat-message-input-sell", element.name)
-                player.nextChat {
-                    if (it.contains("exit")) {
-                        open(player, data, editor)
-                        return@nextChat
-                    }
-                    val amount = it.toIntOrNull()
-                    if (amount == null) {
-                        player.sendLang("chat-message-input-error")
-                        open(player, data, editor)
-                        return@nextChat
-                    }
-                    element.sell(player, amount)
-                    open(player, data, editor)
+            if (event.clickEvent().click == ClickType.DROP) {
+                submit {
+                    player.closeInventory()
+                    UIShopGoodInfo.openInteractiveUI(player, data, element, false, query)
                 }
                 return@onClick
             }
-            if (event.clickEvent().isRightClick) {
-                element.sell(player, 1)
-                open(player, data, editor)
-                return@onClick
+            //购买
+            if (element.buy?.enable == true) {
+                player.closeInventory()
+                if (event.clickEvent().isLeftClick && event.clickEvent().isShiftClick) {
+                    player.sendLang("chat-message-input-buy", element.name)
+                    player.nextChat {
+                        if (it.contains("exit")) {
+                            open(player, data, editor)
+                            return@nextChat
+                        }
+                        val amount = it.toIntOrNull()
+                        if (amount == null) {
+                            player.sendLang("chat-message-input-error")
+                            open(player, data, editor)
+                            return@nextChat
+                        }
+                        element.buy(player, amount)
+                        open(player, data, editor)
+                    }
+                    return@onClick
+                }
+                if (event.clickEvent().isLeftClick) {
+                    element.buy(player, 1)
+                    open(player, data, editor)
+                    return@onClick
+                }
+            }
+            if (element.sell?.enable == true) {
+                player.closeInventory()
+                if (event.clickEvent().isRightClick && event.clickEvent().isShiftClick) {
+                    player.sendLang("chat-message-input-sell", element.name)
+                    player.nextChat {
+                        if (it.contains("exit")) {
+                            open(player, data, editor)
+                            return@nextChat
+                        }
+                        val amount = it.toIntOrNull()
+                        if (amount == null) {
+                            player.sendLang("chat-message-input-error")
+                            open(player, data, editor)
+                            return@nextChat
+                        }
+                        element.sell(player, amount)
+                        open(player, data, editor)
+                    }
+                    return@onClick
+                }
+                if (event.clickEvent().isRightClick) {
+                    element.sell(player, 1)
+                    open(player, data, editor)
+                    return@onClick
+                }
             }
         }
 

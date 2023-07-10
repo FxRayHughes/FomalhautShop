@@ -146,6 +146,20 @@ object ShopMainCommand {
         }
     }
 
+    @CommandBody(permission = "shop.remove")
+    val remove = subCommand {
+        dynamic("Shop") {
+            suggestion<CommandSender> { sender, context ->
+                ShopManager.goods.map { it.id }
+            }
+            execute<CommandSender> { sender, context, argument ->
+                val shop = ShopManager.goods.firstOrNull { it.id == context["Shop"] } ?: return@execute
+                shop.delete()
+                sender.sendMessage("删除完成 已移动到回收站")
+            }
+        }
+    }
+
     @CommandBody(permission = "shop.get")
     val get = subCommand {
         dynamic("Shop") {

@@ -21,7 +21,7 @@ object ItemSaveLib {
 
     fun addItem(id: String, itemStack: ItemStack) {
         items[id] = itemStack
-        newFile(getDataFolder(), "save/$id.yml").let {
+        newFile(getDataFolder(), "save/$id.yml",create = true).let {
             if (it.exists()) {
                 it.createNewFile()
             }

@@ -117,10 +117,10 @@ data class ShopGoodsSellData(
             itemData.take(player)
         }
 
-        script.apply {
-            replace("{action.amount}", amount.toString())
-            replace("{data.goods}", shopGoodsBaseData.name)
-            replace("{data.money}", (getMoney(player) * amount).toString())
+        script.map {
+            it.replace("<action_amount>", amount.toString())
+                .replace("{data.goods}", shopGoodsBaseData.name)
+                .replace("{data.money}", (getMoney(player) * amount).toString())
         }.eval(player)
 
         if (money > 0.0) {
@@ -147,6 +147,7 @@ data class ShopGoodsSellData(
         itemStack.set("shop.sell.moneyGet", getMoney(player))
         itemStack.set("shop.sell.moneyType", moneyType)
         itemStack.set("shop.sell.moneyTypeShow", MoneyAPI.getName(moneyType))
+        itemStack.set("shop.sell.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
         itemStack.set("shop.sell.permission", permission)
         itemStack.set("shop.sell.script", script.joinToString(","))
         itemStack.set("shop.sell.limit", limit)

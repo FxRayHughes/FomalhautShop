@@ -30,7 +30,7 @@ object ShopItemManager {
             }
         }
         val saveId = System.currentTimeMillis().toString()
-        ItemSaveLib.addItem(saveId, item)
+        ItemSaveLib.addItem(saveId, item.clone())
         return "[FS] ${saveId} => ${item.amount}}"
     }
 

@@ -11,6 +11,7 @@ import taboolib.platform.compat.replacePlaceholder
 import taboolib.platform.util.isAir
 import taboolib.platform.util.modifyLore
 import taboolib.platform.util.modifyMeta
+import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 
 
 fun ItemStack?.ifAir(): ItemStack? {
@@ -118,6 +119,26 @@ fun ItemStack?.papi(player: Player): ItemStack? {
     }
     modifyLore {
         val clone = map { it.replacePlaceholder(player).colored() }.toMutableList()
+        this.clear()
+        this.addAll(clone)
+    }
+    return this
+}
+
+fun ItemStack?.papi(player: Player, shopGoodsBaseData: ShopGoodsBaseData): ItemStack? {
+    if (this == null) {
+        return null
+    }
+    if (this.isAir()) {
+        return this
+    }
+    modifyMeta<ItemMeta> {
+        if (this.hasDisplayName()) {
+            setDisplayName(displayName.replace("{shop}", shopGoodsBaseData.id).replacePlaceholder(player))
+        }
+    }
+    modifyLore {
+        val clone = map { it.replace("{shop}", shopGoodsBaseData.id).replacePlaceholder(player).colored() }.toMutableList()
         this.clear()
         this.addAll(clone)
     }

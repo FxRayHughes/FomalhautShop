@@ -23,16 +23,26 @@ data class ShopItemData(
         ShopItemManager.getData(type)
     }
 
+    fun getItemAmount(player: Player): ItemStack {
+        return getItem(player).apply {
+            if (this@ShopItemData.amount >= 64) {
+                this.amount = 64
+            } else {
+                this.amount = this@ShopItemData.amount
+            }
+        }
+    }
+
     fun getItem(player: Player): ItemStack {
-        return item.getItem(player, id) ?: error("物品不存在 ${source}")
+        return item.getItem(player, id)?.clone() ?: error("物品不存在 ${source}")
     }
 
     fun getShowName(player: Player): String {
-        return getItem(player).getName(player)
+        return getItem(player).getName()
     }
 
     fun getShowString(player: Player): String {
-        return "&f${getItem(player).getName(player)} &fX ${amount}".colored()
+        return "&f${getItem(player).getName()} &fX ${amount}".colored()
     }
 
     fun isMeet(player: Player): Boolean {

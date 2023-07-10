@@ -1,5 +1,7 @@
 Vault:
   name: "货币"
+  #Vault的get仅供展示 实际获取是由底层api获取的
+  get: "%vault_eco_balance%"
 "世界币":
   #Type可选: INT DOUBLE
   #INT整数  DOUBLE小数
