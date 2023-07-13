@@ -141,6 +141,14 @@ object ShopMainCommand {
 
     @CommandBody(permission = "shop.edit")
     val editList = subCommand {
+        dynamic("商店名") {
+            suggestion<CommandSender>(uncheck = true) { sender, context ->
+                ShopManager.goods.map { it.group }.flattenList()
+            }
+            execute<Player> { sender, context, argument ->
+                UIGoodsEdit.openEditList(sender, context["商店名"])
+            }
+        }
         execute<Player> { sender, context, argument ->
             UIGoodsEdit.openEditList(sender)
         }

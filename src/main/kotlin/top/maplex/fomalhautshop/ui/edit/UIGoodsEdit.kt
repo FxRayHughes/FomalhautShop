@@ -20,11 +20,15 @@ import top.maplex.fomalhautshop.utils.papi
 
 object UIGoodsEdit {
 
-    fun openEditList(player: Player) {
+    fun openEditList(player: Player, good: String? = null) {
         submit {
             player.openMenu<Linked<ShopGoodsBaseData>> {
                 elements {
-                    ShopManager.goods
+                    if (good == null) {
+                        ShopManager.goods
+                    } else {
+                        ShopManager.goods.filter { it.group.contains(good) }
+                    }
                 }
 
                 onGenerate { player, element, index, slot ->

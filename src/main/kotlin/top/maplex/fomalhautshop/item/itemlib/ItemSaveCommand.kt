@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
+import taboolib.platform.util.giveItem
 import taboolib.platform.util.isAir
 
 @CommandHeader("itemsave", aliases = ["sis"], permission = "itemsave.use")
@@ -73,7 +74,7 @@ object ItemSaveCommand {
                             sender.sendMessage("§c未找到玩家 $player")
                             return@execute
                         }
-                        target.inventory.addItem(item)
+                        target.giveItem(item, amount)
                         sender.sendMessage("§a成功给予玩家 ${target.name} 物品 $name * $amount")
                     }
                 }

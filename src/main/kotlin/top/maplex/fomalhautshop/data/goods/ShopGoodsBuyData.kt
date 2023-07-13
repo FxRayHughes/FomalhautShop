@@ -172,6 +172,9 @@ data class ShopGoodsBuyData(
     }
 
     fun evalBuy(player: Player, amount: Int, goodsItem: ShopItemData, shopGoodsBaseData: ShopGoodsBaseData): Boolean {
+        if (amount <= 0) {
+            return false
+        }
         if (!checkBuy(player, amount, true)) {
             return false
         }
