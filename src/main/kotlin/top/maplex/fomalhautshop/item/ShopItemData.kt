@@ -3,6 +3,8 @@ package top.maplex.fomalhautshop.item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.chat.colored
+import taboolib.module.configuration.util.getStringColored
+import taboolib.module.nms.getI18nName
 import taboolib.module.nms.getName
 
 data class ShopItemData(
@@ -23,6 +25,10 @@ data class ShopItemData(
         ShopItemManager.getData(type)
     }
 
+    fun toStringValue(): String {
+        return "[${type}] ${id} => ${amount}"
+    }
+
     fun getItemAmount(player: Player): ItemStack {
         return getItem(player).apply {
             if (this@ShopItemData.amount >= 64) {
@@ -38,7 +44,14 @@ data class ShopItemData(
     }
 
     fun getShowName(player: Player): String {
-        return getItem(player).getName()
+        val item = getItem(player)
+        val itemMeta = item.itemMeta
+        return if (itemMeta?.hasDisplayName() == true) itemMeta.displayName else getI18nNameX(player)
+    }
+
+    private fun getI18nNameX(player: Player): String {
+        val item = getItem(player)
+        return ShopItemManager.config.getStringColored(item.type.name) ?: item.getI18nName()
     }
 
     fun getShowString(player: Player): String {

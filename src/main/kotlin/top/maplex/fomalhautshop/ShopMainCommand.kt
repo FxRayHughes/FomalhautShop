@@ -112,6 +112,7 @@ object ShopMainCommand {
         execute<CommandSender> { sender, context, argument ->
             UIReader.load()
             MoneyAPI.moneyConfig.reload()
+            UIShopInfo.config.reload()
             FomalhautShop.config.reload()
             sender.sendMessage("§a重载成功")
         }

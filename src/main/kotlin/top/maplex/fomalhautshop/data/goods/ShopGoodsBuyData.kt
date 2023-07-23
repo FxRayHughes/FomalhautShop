@@ -7,10 +7,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
-import taboolib.module.nms.ItemTagData
-import taboolib.module.nms.ItemTagList
-import taboolib.module.nms.getItemTag
-import taboolib.module.nms.getName
 import taboolib.platform.util.asLangText
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.giveItem
@@ -19,12 +15,10 @@ import top.maplex.fomalhautshop.data.discount.DiscountManager
 import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.money.MoneyAPI
-import top.maplex.fomalhautshop.money.MoneyAPI.replace
 import top.maplex.fomalhautshop.ui.eval
 import top.maplex.fomalhautshop.utils.editAboData
 import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
-import java.lang.StringBuilder
 
 @Serializable
 data class ShopGoodsBuyData(

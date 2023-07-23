@@ -5,12 +5,10 @@ import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Basic
-import taboolib.platform.util.buildItem
-import taboolib.platform.util.inputBook
-import taboolib.platform.util.nextChat
-import taboolib.platform.util.sendLang
+import taboolib.platform.util.*
 import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
+import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.reader.ShopReader
 import top.maplex.fomalhautshop.ui.edit.UIGoodsEdit.itemA
@@ -152,18 +150,32 @@ object UIGoodsBuyEdit {
                 rows(6)
                 onBuild { player, inventory ->
                     goods.buy!!.items.forEach {
-                        inventory.addItem(ShopItemManager.getItem(it).getItemAmount(player))
+                        val item = ShopItemManager.getItem(it)
+                        repeat(item.amount) { inventory.addItem(item.getItem(player)).values.forEach { _ -> } }
                     }
                 }
                 onClose {
                     val inv = it.inventory
-                    val items = mutableListOf<String>()
+                    {
+                        val items = mutableListOf<String>()
+                        for (i in 0 until inv.size) {
+                            val item = inv.getItem(i) ?: continue
+                            items.add(ShopItemManager.toString(item))
+                        }
+                        goods.buy!!.items = items
+                    }
+                    val items = mutableMapOf<String, ShopItemData>()
                     for (i in 0 until inv.size) {
                         val item = inv.getItem(i) ?: continue
-                        items.add(ShopItemManager.toString(item))
-                    }
-                    goods.buy!!.items = items
 
+                        val shopItemData = ShopItemData(ShopItemManager.toString(item))
+                        if (items.containsKey(shopItemData.type)) {
+                            items[shopItemData.type]!!.amount += shopItemData.amount
+                        } else {
+                            items[shopItemData.type] = shopItemData
+                        }
+                    }
+                    goods.buy!!.items = items.values.map {z-> z.toStringValue() }.toMutableList()
                     submit(delay = 2) {
                         open(player, goods)
                     }

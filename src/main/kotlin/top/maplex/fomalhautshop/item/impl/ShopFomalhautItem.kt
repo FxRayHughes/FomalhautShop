@@ -4,6 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.module.nms.getName
 import taboolib.platform.util.isAir
 import top.maplex.fomalhautshop.item.ShopItem
 import top.maplex.fomalhautshop.item.itemlib.ItemSaveLib
@@ -29,14 +30,15 @@ object ShopFomalhautItem : ShopItem {
         if (ItemSaveLib.items.isEmpty()) {
             return "none"
         }
-        return ItemSaveLib.items.firstNotNullOf { (id, item) ->
+        ItemSaveLib.items.forEach { (id, item) ->
             if (item.isAir()) {
-                return "none"
+                return@forEach
             }
             if (itemStack.isSimilar(item)) {
-                return@firstNotNullOf id
+                return id
             }
-            return@firstNotNullOf "none"
+            return@forEach
         }
+        return "none"
     }
 }

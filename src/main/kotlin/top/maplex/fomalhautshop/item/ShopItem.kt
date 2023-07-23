@@ -16,7 +16,10 @@ interface ShopItem {
     /**
      * 物品列表
      */
-    fun getItemList(): MutableList<ItemStack>
+    fun getItemList(): MutableList<ItemStack> {
+        
+        return mutableListOf()
+    }
 
     /**
      * 获取物品

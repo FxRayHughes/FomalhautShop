@@ -1,19 +1,18 @@
 package top.maplex.fomalhautshop.ui.main
 
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
-import org.bukkit.inventory.ItemFlag
-import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
+import taboolib.module.configuration.Config
+import taboolib.module.configuration.ConfigFile
+import taboolib.module.configuration.util.getStringColored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Linked
+import taboolib.platform.compat.replacePlaceholder
 import taboolib.platform.util.buildItem
-import taboolib.platform.util.modifyMeta
 import taboolib.platform.util.nextChat
 import taboolib.platform.util.sendLang
-import top.maplex.fomalhautshop.FomalhautShop
 import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 import top.maplex.fomalhautshop.ui.UIReader
@@ -22,11 +21,15 @@ import top.maplex.fomalhautshop.ui.inits
 
 object UIShopInfo {
 
+    @Config(value = "shops.yml")
+    lateinit var config: ConfigFile
+
     //显示shop的页面
     fun open(player: Player, shopManagerData: String, editor: Boolean = false, query: String = "") {
         UIReader.scriptConfig["open-${shopManagerData}"]?.eval(player)
         submit {
-            player.openMenu<Linked<ShopGoodsBaseData>>(shopManagerData.colored()) {
+            val name = config.getStringColored(shopManagerData)?.replacePlaceholder(player) ?: shopManagerData
+            player.openMenu<Linked<ShopGoodsBaseData>>(name.colored()) {
                 init(shopManagerData, player, editor, query)
             }
         }

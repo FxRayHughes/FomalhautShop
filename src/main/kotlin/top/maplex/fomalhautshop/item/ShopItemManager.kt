@@ -3,20 +3,28 @@ package top.maplex.fomalhautshop.item
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.info
+import taboolib.module.configuration.Config
+import taboolib.module.configuration.ConfigFile
 import taboolib.platform.util.hasLore
 import taboolib.platform.util.hasName
+import top.maplex.fomalhautshop.item.impl.ShopFomalhautItem
 import top.maplex.fomalhautshop.item.impl.ShopMinecraftItem
 import top.maplex.fomalhautshop.item.itemlib.ItemSaveLib
 import java.util.concurrent.ConcurrentHashMap
 
 object ShopItemManager {
 
+    @Config(value = "lang/itemI18n.yml")
+    lateinit var config: ConfigFile
+
     val items = ConcurrentHashMap<String, ShopItem>()
 
     val cache = ConcurrentHashMap<String, ShopItemData>()
 
-
     fun toString(item: ItemStack): String {
+        if (ShopFomalhautItem.getItemId(item) != "none") {
+            return "[FS] ${ShopFomalhautItem.getItemId(item)} => ${item.amount}"
+        }
         items.forEach { (t, u) ->
             if (t == ShopMinecraftItem.source) {
                 if (!item.hasLore() && !item.hasName()) {

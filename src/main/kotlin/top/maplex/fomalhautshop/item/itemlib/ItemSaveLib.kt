@@ -21,7 +21,16 @@ object ItemSaveLib {
 
     fun addItem(id: String, itemStack: ItemStack) {
         items[id] = itemStack
-        newFile(getDataFolder(), "save/$id.yml",create = true).let {
+        runCatching {
+            File(getDataFolder(), "save/$id.yml").apply {
+                if (!exists()) {
+                    createNewFile()
+                }
+            }
+        }.getOrNull().let {
+            if (it == null) {
+                error("文件创建失败: $id 文件: save/$id.yml")
+            }
             if (it.exists()) {
                 it.createNewFile()
             }

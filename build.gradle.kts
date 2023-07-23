@@ -20,7 +20,7 @@ taboolib {
     install("expansion-command-helper")
     relocate("ink.ptms.um","top.maplex.fomalhautshop.um")
     classifier = null
-    version = "6.0.11-18"
+    version = "6.0.11-27"
 }
 
 repositories {
