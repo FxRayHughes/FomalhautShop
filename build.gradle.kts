@@ -37,6 +37,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11902:11902-minimize:mapped")
     compileOnly("ink.ptms.core:v11902:11902-minimize:universal")
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.5.0b")
+    implementation("ink.ptms:Zaphkiel:2.0.14")
 
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))

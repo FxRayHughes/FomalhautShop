@@ -31,7 +31,7 @@ object MoneyAPI {
                     when (moneyConfig.getString("${type}.type")) {
                         "Int", "int", "INT" -> {
                             moneyConfig.getStringList("${type}.take")
-                                .replace("<value>", amount.toInt().toString())
+                                .replace("<value>", amount.toLong().toString())
                                 .replace("<player>", player.name).forEach {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
                                 }
@@ -60,7 +60,7 @@ object MoneyAPI {
                 when (moneyConfig.getString("${type}.type")) {
                     "Int", "int", "INT" -> {
                         moneyConfig.getStringList("${type}.add")
-                            .replace("<value>", amount.toInt().toString())
+                            .replace("<value>", amount.toLong().toString())
                             .replace("<player>", player.name).forEach {
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), it.replacePlaceholder(player))
                             }

@@ -151,28 +151,31 @@ object UIGoodsBuyEdit {
                 onBuild { player, inventory ->
                     goods.buy!!.items.forEach {
                         val item = ShopItemManager.getItem(it)
-                        repeat(item.amount) { inventory.addItem(item.getItem(player)).values.forEach { _ -> } }
+                        repeat(item.amount) {
+                            inventory.addItem(item.getItem(player))
+                        }
                     }
                 }
                 onClose {
                     val inv = it.inventory
-                    {
-                        val items = mutableListOf<String>()
-                        for (i in 0 until inv.size) {
-                            val item = inv.getItem(i) ?: continue
-                            items.add(ShopItemManager.toString(item))
-                        }
-                        goods.buy!!.items = items
-                    }
+//                    {
+//                        val items = mutableListOf<String>()
+//                        for (i in 0 until inv.size) {
+//                            val item = inv.getItem(i) ?: continue
+//                            items.add(ShopItemManager.toString(item))
+//                        }
+//                        goods.buy!!.items = items
+//                    }
                     val items = mutableMapOf<String, ShopItemData>()
                     for (i in 0 until inv.size) {
                         val item = inv.getItem(i) ?: continue
 
                         val shopItemData = ShopItemData(ShopItemManager.toString(item))
-                        if (items.containsKey(shopItemData.type)) {
-                            items[shopItemData.type]!!.amount += shopItemData.amount
+                        val mapId = "${shopItemData.type}__${shopItemData.id}}"
+                        if (items.containsKey(mapId)) {
+                            items[mapId]!!.amount += shopItemData.amount
                         } else {
-                            items[shopItemData.type] = shopItemData
+                            items[mapId] = shopItemData
                         }
                     }
                     goods.buy!!.items = items.values.map {z-> z.toStringValue() }.toMutableList()

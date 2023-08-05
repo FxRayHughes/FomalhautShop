@@ -1,3 +1,4 @@
+system-message-buy-not-maxAmount: "§8[§4 商店 §8]§7 你已经购买了最大数量{0}"
 system-message-sell-not-number: "§8[§4 商店 §8]§7 出售失败 你只有{0}X{2} &8({1})"
 system-message-buy-not-money: "§8[§4 商店 §8]§7 你还缺少 &f{0}{1}"
 system-message-buy-not-permission: "§8[§4 商店 §8]§7 你缺少 &f{0}&7 权限无法购买"

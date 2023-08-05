@@ -7,10 +7,13 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
+import taboolib.module.nms.ItemTag
+import taboolib.module.nms.getItemTag
 import taboolib.platform.util.asLangText
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.giveItem
 import taboolib.platform.util.sendLang
+import top.maplex.fomalhautshop.FomalhautShop
 import top.maplex.fomalhautshop.data.discount.DiscountManager
 import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
@@ -111,6 +114,12 @@ data class ShopGoodsBuyData(
             player.sendLang("system-message-buy-not-permission", permission)
             return false
         }
+
+        if (amount > FomalhautShop.config.getInt("MaxAmount", 64)) {
+            player.sendLang("system-message-buy-not-maxAmount", FomalhautShop.config.getInt("MaxAmount", 64))
+            return false
+        }
+
         //判断限购状态
         if (limit != -1) {
             val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
@@ -127,6 +136,10 @@ data class ShopGoodsBuyData(
         if (money > 0.0) {
             val has = MoneyAPI.getMoney(player, moneyType)
             val needMoney = getMoney(player) * amount
+            if (needMoney >= 100000000.0) {
+                player.sendLang("system-message-buy-not-money", needMoney, MoneyAPI.getName(moneyType))
+                return false
+            }
             if (needMoney > 0.0 && has < needMoney) {
                 val need = needMoney - has
                 if (eval) {
@@ -178,7 +191,7 @@ data class ShopGoodsBuyData(
         }
 
         if (money > 0.0) {
-            val needMoney = getMoney(player) * amount
+            val needMoney = getMoney(player) * amount.toDouble()
             MoneyAPI.takeMoney(player, needMoney, moneyType)
         }
 
@@ -240,21 +253,22 @@ data class ShopGoodsBuyData(
         )
     }
 
-    fun setNBT(player: Player, itemStack: ItemStack, goodsItem: ShopItemData) {
-        itemStack.set("shop.buy.enable", enable)
-        itemStack.set("shop.buy.money", money)
-        itemStack.set("shop.buy.moneyGet", getMoney(player))
-        itemStack.set("shop.buy.moneyType", moneyType)
-        itemStack.set("shop.buy.moneyTypeShow", MoneyAPI.getName(moneyType))
-        itemStack.set("shop.buy.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
-        itemStack.set("shop.buy.moneyHas", MoneyAPI.getMoney(player, moneyType))
-        itemStack.set("shop.buy.discount", discount)
-        itemStack.set("shop.buy.permission", permission)
-        itemStack.set("shop.buy.items", items.joinToString(",") { ShopItemManager.getItem(it).getShowString(player) })
-        itemStack.set("shop.buy.script", script.joinToString(","))
-        itemStack.set("shop.buy.limit", limit)
-        itemStack.set("shop.buy.limitId", limitId)
-        itemStack.set(
+    fun setNBT(player: Player, itemStack: ItemStack, goodsItem: ItemTag) {
+        val itemTag = goodsItem
+        itemTag.putDeep("shop.buy.enable", enable)
+        itemTag.putDeep("shop.buy.money", money)
+        itemTag.putDeep("shop.buy.moneyGet", getMoney(player))
+        itemTag.putDeep("shop.buy.moneyType", moneyType)
+        itemTag.putDeep("shop.buy.moneyTypeShow", MoneyAPI.getName(moneyType))
+        itemTag.putDeep("shop.buy.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
+        itemTag.putDeep("shop.buy.moneyHas", MoneyAPI.getMoney(player, moneyType))
+        itemTag.putDeep("shop.buy.discount", discount)
+        itemTag.putDeep("shop.buy.permission", permission)
+        itemTag.putDeep("shop.buy.items", items.joinToString(",") { ShopItemManager.getItem(it).getShowString(player) })
+        itemTag.putDeep("shop.buy.script", script.joinToString(","))
+        itemTag.putDeep("shop.buy.limit", limit)
+        itemTag.putDeep("shop.buy.limitId", limitId)
+        itemTag.putDeep(
             "shop.buy.limitUse",
             getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
         )
@@ -266,10 +280,11 @@ data class ShopGoodsBuyData(
                     builder.append("[FShop]")
                 }
             }
-            itemStack.set("shop.buy.itemsJson", builder.toString())
+            itemTag.putDeep("shop.buy.itemsJson", builder.toString())
         } else {
-            itemStack.set("shop.buy.itemsJson", "none")
+            itemTag.putDeep("shop.buy.itemsJson", "none")
         }
+        itemTag.saveTo(itemStack)
     }
 
 }

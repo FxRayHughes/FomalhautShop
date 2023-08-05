@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
+import taboolib.module.ui.ClickType
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Basic
 import taboolib.module.ui.type.Linked
@@ -290,9 +291,18 @@ object UIGoodsEdit {
             name = "&f设置名称: ${goods.name}"
             lore.add(" ")
             lore.add("&f点击设置名称")
+            lore.add("&f右键快捷设置名称为产物名")
             colored()
         }) {
             player.closeInventory()
+            if (clickEvent().isRightClick) {
+                goods.goodsItem.getShowName(player).let {
+                    goods.name = "&f${it}".colored()
+                }
+                player.sendLang("chat-message-input-edit-set-name-success", goods.name)
+                open(player, goods)
+                return@set
+            }
             player.sendLang("chat-message-input-edit-set-name")
             player.nextChat { ins ->
                 if (ins == "exit") {

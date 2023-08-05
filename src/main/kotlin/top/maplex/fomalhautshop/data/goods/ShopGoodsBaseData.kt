@@ -12,6 +12,8 @@ import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.submit
 import taboolib.module.chat.colored
+import taboolib.module.nms.getItemTag
+import taboolib.module.nms.setItemTag
 import taboolib.platform.compat.replacePlaceholder
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.modifyLore
@@ -50,21 +52,24 @@ data class ShopGoodsBaseData(
 
     fun showItem(player: Player, editor: Boolean = false): ItemStack {
         val item = ShopItemManager.getItem(goods).getItemAmount(player).clone()
-        item.set("shop.id", id)
-        item.set("shop.group", group.joinToString(","))
-        item.set("shop.name", name)
-        item.set("shop.weight", weight)
-        item.set("shop.info", info.joinToString(","))
-        item.set("shop.goods.data", goods)
-        item.set("shop.goods.show", ShopItemManager.getItem(goods).getShowString(player))
-        val sellNbt = sell?.setNBT(player, item, goodsItem)
+        val itemTag = item.getItemTag()
+        itemTag.putDeep("shop.id", id)
+        itemTag.putDeep("shop.group", group.joinToString(","))
+        itemTag.putDeep("shop.name", name)
+        itemTag.putDeep("shop.weight", weight)
+        itemTag.putDeep("shop.info", info.joinToString(","))
+        itemTag.putDeep("shop.goods.data", goods)
+        itemTag.putDeep("shop.goods.show", ShopItemManager.getItem(goods).getShowString(player))
+        val sellNbt = sell?.setNBT(player, item, itemTag)
         if (sellNbt == null) {
-            item.set("shop.sell.enable", false)
+            itemTag.putDeep("shop.sell.enable", false)
         }
-        val buyNbt = buy?.setNBT(player, item, goodsItem)
+        val buyNbt = buy?.setNBT(player, item, itemTag)
         if (buyNbt == null) {
-            item.set("shop.buy.enable", false)
+            itemTag.putDeep("shop.buy.enable", false)
         }
+        itemTag.saveTo(item)
+        item.setItemTag(itemTag)
         return item.apply {
             item.modifyMeta<ItemMeta> {
                 setDisplayName(getShowName(player))

@@ -6,6 +6,8 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.library.xseries.parseToItemStack
+import taboolib.platform.util.hasLore
+import taboolib.platform.util.hasName
 import top.maplex.fomalhautshop.item.ShopItem
 
 object ShopMinecraftItem : ShopItem {
@@ -30,6 +32,9 @@ object ShopMinecraftItem : ShopItem {
     }
 
     override fun getItemId(itemStack: ItemStack): String {
+        if (itemStack.hasItemMeta() || itemStack.hasName() || itemStack.hasLore()) {
+            return "none"
+        }
         return itemStack.type.name
     }
 

@@ -1,3 +1,4 @@
 Lang: "zh_CN"
 #可选 local 和 aboleth
 Discount: "local"
+MaxAmount: 64

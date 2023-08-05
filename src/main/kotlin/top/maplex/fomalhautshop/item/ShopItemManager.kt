@@ -38,8 +38,11 @@ object ShopItemManager {
             }
         }
         val saveId = System.currentTimeMillis().toString()
-        ItemSaveLib.addItem(saveId, item.clone())
-        return "[FS] ${saveId} => ${item.amount}"
+        return if (ItemSaveLib.addItem(saveId, item.clone())){
+            "[FS] $saveId => ${item.amount}"
+        }else{
+            "[SI] $saveId => ${item.amount}"
+        }
     }
 
     fun registerItem(item: ShopItem) {

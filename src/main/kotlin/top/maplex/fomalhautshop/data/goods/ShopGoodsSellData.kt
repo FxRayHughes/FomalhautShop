@@ -5,6 +5,8 @@ import net.mamoe.yamlkt.Comment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.chat.colored
+import taboolib.module.nms.ItemTag
+import taboolib.module.nms.getItemTag
 import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.sendLang
 import top.maplex.fomalhautshop.item.ShopItemData
@@ -128,6 +130,10 @@ data class ShopGoodsSellData(
 
         if (money > 0.0) {
             val needMoney = getMoney(player) * amount
+            if (needMoney >= 100000000.0) {
+                player.sendLang("system-message-buy-not-money", needMoney, MoneyAPI.getName(moneyType))
+                return false
+            }
             MoneyAPI.addMoney(player, needMoney, moneyType)
         }
         return true
@@ -144,22 +150,22 @@ data class ShopGoodsSellData(
         )
     }
 
-    fun setNBT(player: Player, itemStack: ItemStack, goodsItem: ShopItemData) {
-        itemStack.set("shop.sell.enable", enable)
-        itemStack.set("shop.sell.money", money)
-        itemStack.set("shop.sell.moneyGet", getMoney(player))
-        itemStack.set("shop.sell.moneyType", moneyType)
-        itemStack.set("shop.sell.moneyTypeShow", MoneyAPI.getName(moneyType))
-        itemStack.set("shop.sell.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
-        itemStack.set("shop.sell.permission", permission)
-        itemStack.set("shop.sell.script", script.joinToString(","))
-        itemStack.set("shop.sell.limit", limit)
-        itemStack.set("shop.sell.limitId", limitId)
-        itemStack.set(
+    fun setNBT(player: Player, itemStack: ItemStack, goodsItem: ItemTag) {
+        val itemTag = goodsItem
+        itemTag.putDeep("shop.sell.enable", enable)
+        itemTag.putDeep("shop.sell.money", money)
+        itemTag.putDeep("shop.sell.moneyGet", getMoney(player))
+        itemTag.putDeep("shop.sell.moneyType", moneyType)
+        itemTag.putDeep("shop.sell.moneyTypeShow", MoneyAPI.getName(moneyType))
+        itemTag.putDeep("shop.sell.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
+        itemTag.putDeep("shop.sell.permission", permission)
+        itemTag.putDeep("shop.sell.script", script.joinToString(","))
+        itemTag.putDeep("shop.sell.limit", limit)
+        itemTag.putDeep("shop.sell.limitId", limitId)
+        itemTag.putDeep(
             "shop.sell.limitUse",
             getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
         )
-
     }
 
 }
