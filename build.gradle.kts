@@ -20,23 +20,24 @@ taboolib {
     install("expansion-command-helper")
     relocate("ink.ptms.um","top.maplex.fomalhautshop.um")
     classifier = null
-    version = "6.0.11-27"
+    version = "6.0.12-40"
 }
 
 repositories {
     maven { url = uri("https://repo.dmulloy2.net/repository/public/") }
     maven { url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    taboo("ink.ptms:um:1.0.0-beta-27")
+    taboo("ink.ptms:um:1.0.0-beta-33")
     taboo("net.mamoe.yamlkt:yamlkt:0.13.0")
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11902:11902-minimize:mapped")
     compileOnly("ink.ptms.core:v11902:11902-minimize:universal")
-    compileOnly("com.github.LoneDev6:API-ItemsAdder:3.5.0b")
+    compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
     implementation("ink.ptms:Zaphkiel:2.0.14")
 
     compileOnly(kotlin("stdlib"))

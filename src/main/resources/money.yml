@@ -13,6 +13,9 @@ Vault:
   add:
     - "abo editmo 世界币 <value> + <player>"
   get: "%aboe_世界币_0_me_0%"
+  symbol: "币"
+  set:
+    - "abo editmo 世界币 <value> = <player>"
 点券:
   type: "INT"
   name: "&f点券"
@@ -21,3 +24,4 @@ Vault:
   add:
     - "points give <player> <value>"
   get: "%playerpoints_points%"
+  symbol: "点"

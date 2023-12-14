@@ -7,6 +7,7 @@ import taboolib.common.io.newFile
 import taboolib.common.platform.command.*
 import taboolib.expansion.createHelper
 import top.maplex.fomalhautshop.data.ShopManager
+import top.maplex.fomalhautshop.data.discount.DiscountPlayerData
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 import top.maplex.fomalhautshop.money.MoneyAPI
 import top.maplex.fomalhautshop.reader.ShopOldReader
@@ -114,6 +115,7 @@ object ShopMainCommand {
             MoneyAPI.moneyConfig.reload()
             UIShopInfo.config.reload()
             FomalhautShop.config.reload()
+            DiscountPlayerData.config.reload()
             sender.sendMessage("§a重载成功")
         }
     }
@@ -166,6 +168,15 @@ object ShopMainCommand {
                 shop.delete()
                 sender.sendMessage("删除完成 已移动到回收站")
             }
+        }
+    }
+
+    @CommandBody(permission = "shop.remove")
+    val clearDiscount = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            DiscountPlayerData.config.clear()
+            DiscountPlayerData.config.saveToFile()
+            sender.sendMessage("删除完成")
         }
     }
 

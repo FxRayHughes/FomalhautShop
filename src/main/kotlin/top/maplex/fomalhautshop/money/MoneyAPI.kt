@@ -25,7 +25,9 @@ object MoneyAPI {
         } else {
             if (type == "Vault") {
                 val eco = economy ?: return false
-                eco.withdrawPlayer(player, amount)
+                submit {
+                    eco.withdrawPlayer(player, amount)
+                }
             } else {
                 submit {
                     when (moneyConfig.getString("${type}.type")) {
@@ -54,7 +56,9 @@ object MoneyAPI {
     fun addMoney(player: Player, amount: Double, type: String) {
         if (type == "Vault") {
             val eco = economy ?: return
-            eco.depositPlayer(player, amount)
+            submit {
+                eco.depositPlayer(player, amount)
+            }
         } else {
             submit {
                 when (moneyConfig.getString("${type}.type")) {

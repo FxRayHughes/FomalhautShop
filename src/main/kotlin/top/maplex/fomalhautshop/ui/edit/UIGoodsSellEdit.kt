@@ -22,7 +22,7 @@ object UIGoodsSellEdit {
                     "Q###A###Z",
                     "#B#C#D#E#",
                     "#F#G#H#I#",
-                    "#########",
+                    "#J#######",
                 )
                 itemA(player, goods, 'A')
                 setMoney(player, goods, 'B')
@@ -30,6 +30,7 @@ object UIGoodsSellEdit {
                 setPermission(player, goods, 'D')
                 setLimit(player, goods, 'E')
                 setScript(player, goods, 'F')
+                setCheck(player, goods, 'G')
 
                 set('Q', buildItem(XMaterial.OAK_DOOR) {
                     name = "&f返回"
@@ -41,6 +42,35 @@ object UIGoodsSellEdit {
 
                 onClose {
                     ShopReader.saveOne(goods)
+                }
+            }
+        }
+    }
+
+    private fun Basic.setCheck(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(XMaterial.BOOK) {
+            name = "&f设置出售限制脚本"
+
+            lore.add("&f当前脚本:")
+            lore.addAll(goods.sell!!.check.map { "&f$it" })
+            lore.add(" ")
+
+            lore.add("&f左键编辑")
+            lore.add("&f右键清空")
+            colored()
+        }) {
+            player.closeInventory()
+            if (clickEvent().isRightClick) {
+                goods.sell!!.check.clear()
+                submit(delay = 1) {
+                    UIGoodsBuyEdit.open(player, goods)
+                }
+            } else {
+                player.inputBook("输入脚本", true, goods.sell!!.check) {
+                    goods.sell!!.check = it.toMutableList()
+                    submit(delay = 1) {
+                        UIGoodsBuyEdit.open(player, goods)
+                    }
                 }
             }
         }

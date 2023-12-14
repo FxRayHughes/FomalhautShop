@@ -13,6 +13,7 @@ import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.money.MoneyAPI
 import top.maplex.fomalhautshop.money.MoneyAPI.replace
 import top.maplex.fomalhautshop.ui.eval
+import top.maplex.fomalhautshop.utils.check
 import top.maplex.fomalhautshop.utils.editAboData
 import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
@@ -32,32 +33,38 @@ data class ShopGoodsSellData(
     @Comment("限回收数量 需要 Aboleth 插件")
     var limit: Int = -1,
     @Comment("限回收识别关键字")
-    var limitId: String = "公共限购"
+    var limitId: String = "公共限购",
+    @Comment("购买限制 (Kether)")
+    var check: MutableList<String> = mutableListOf(),
 ) {
 
     fun getSellLore(player: Player, itemData: ShopItemData): List<String> {
         val lore = mutableListOf<String>()
+        val amount = getAmount(itemData, player)
         lore.addAll(
             player.asLangTextList(
                 "shop-ui-sell",
                 getMoney(player),
                 MoneyAPI.getName(moneyType),
-                itemData.getNumber(player),
+                amount,
             )
         )
         if (limit != -1) {
             val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
             val can = limit - buy
-            lore.addAll(
-                player.asLangTextList(
-                    "shop-ui-buy-limit",
-                    limit,
-                    buy,
-                    can
-                )
-            )
+            lore.addAll(player.asLangTextList("shop-ui-buy-limit", limit, buy, can))
         }
         return lore.colored()
+    }
+
+    fun getAmount(itemData: ShopItemData, player: Player): Int {
+        val has = itemData.getNumber(player)
+        val amount = if (limit == -1) { has } else {
+            val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
+            val can = limit - buy
+            if (can < has) { can } else { has }
+        }
+        return amount
     }
 
     fun getMoney(player: Player): Double {
@@ -76,6 +83,11 @@ data class ShopGoodsSellData(
             }
             return false
         }
+
+        if (check.check(player).get() == false) {
+            return false
+        }
+
         //判断限购状态
         if (limit != -1) {
             val buy = getAboData(player, "FShop::limit::${limitId}", "0.0").toDouble().toInt()
@@ -157,7 +169,7 @@ data class ShopGoodsSellData(
         itemTag.putDeep("shop.sell.moneyGet", getMoney(player))
         itemTag.putDeep("shop.sell.moneyType", moneyType)
         itemTag.putDeep("shop.sell.moneyTypeShow", MoneyAPI.getName(moneyType))
-        itemTag.putDeep("shop.sell.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
+        itemTag.putDeep("shop.sell.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none")!!)
         itemTag.putDeep("shop.sell.permission", permission)
         itemTag.putDeep("shop.sell.script", script.joinToString(","))
         itemTag.putDeep("shop.sell.limit", limit)

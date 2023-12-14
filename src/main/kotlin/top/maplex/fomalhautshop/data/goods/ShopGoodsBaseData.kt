@@ -3,9 +3,7 @@ package top.maplex.fomalhautshop.data.goods
 
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Comment
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.io.newFile
@@ -19,8 +17,8 @@ import taboolib.platform.util.asLangTextList
 import taboolib.platform.util.modifyLore
 import taboolib.platform.util.modifyMeta
 import top.maplex.fomalhautshop.data.ShopManager
+import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
-import top.maplex.fomalhautshop.utils.set
 import java.io.File
 import java.nio.charset.StandardCharsets
 
@@ -31,7 +29,7 @@ data class ShopGoodsBaseData(
     @Comment("属于那个商店的商品")
     var group: MutableList<String> = mutableListOf(),
     @Comment("这代表商品的显示名称")
-    var name: String,
+    var name: String = "Default",
     @Comment("商品本体 遵守物品书写规范")
     var goods: String,
     @Comment("显示优先级 数字越大排行越前")
@@ -44,11 +42,15 @@ data class ShopGoodsBaseData(
     var buy: ShopGoodsBuyData? = null,
     @Comment("物品出售策略")
     var sell: ShopGoodsSellData? = null,
+    @Comment("显示限制 false 会在商店中隐藏 (kether)")
+    var show: MutableList<String> = mutableListOf(),
     @Comment("这是用来序列化保存文件时文件位置，一般来说不需要修改,读取时会设置")
     var path: String = ""
 ) {
 
-    val goodsItem by lazy { ShopItemManager.getItem(goods) }
+    fun getGoodsItem(): ShopItemData {
+        return ShopItemManager.getItem(goods)
+    }
 
     fun showItem(player: Player, editor: Boolean = false): ItemStack {
         val item = ShopItemManager.getItem(goods).getItemAmount(player).clone()
@@ -83,7 +85,7 @@ data class ShopGoodsBaseData(
                 }
                 add(" ")
                 if (sell != null && sell!!.enable) {
-                    addAll(sell!!.getSellLore(player, goodsItem))
+                    addAll(sell!!.getSellLore(player, getGoodsItem()))
                 }
 
                 addAll(player.asLangTextList("shop-ui-goods-info"))
@@ -96,8 +98,8 @@ data class ShopGoodsBaseData(
     }
 
     fun getShowName(player: Player): String {
-        return if (name.isEmpty()) {
-            goodsItem.getShowName(player)
+        return if (name.isEmpty() && name != "Default") {
+            getGoodsItem().getShowName(player)
         } else {
             name.colored()
         }
@@ -105,14 +107,14 @@ data class ShopGoodsBaseData(
 
     fun buy(player: Player, amount: Int) {
         if (buy != null && buy!!.enable && buy!!.checkBuy(player, amount, true)) {
-            buy!!.evalBuy(player, amount, goodsItem, this)
+            buy!!.evalBuy(player, amount, getGoodsItem(), this)
             buy!!.sendBuyMessage(player, amount, getShowName(player))
         }
     }
 
     fun sell(player: Player, amount: Int) {
-        if (sell != null && sell!!.enable && sell!!.checkSell(player, amount, goodsItem, true)) {
-            sell!!.evalSell(player, amount, goodsItem, this)
+        if (sell != null && sell!!.enable && sell!!.checkSell(player, amount, getGoodsItem(), true)) {
+            sell!!.evalSell(player, amount, getGoodsItem(), this)
             sell!!.sendSellMessage(player, amount, getShowName(player))
         }
     }
@@ -123,7 +125,7 @@ data class ShopGoodsBaseData(
             return false
         }
 
-        if (sell != null && !sell!!.checkSell(player, 1, goodsItem)) {
+        if (sell != null && !sell!!.checkSell(player, 1, getGoodsItem())) {
             return false
         }
 

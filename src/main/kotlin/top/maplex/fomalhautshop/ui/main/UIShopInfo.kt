@@ -18,6 +18,7 @@ import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 import top.maplex.fomalhautshop.ui.UIReader
 import top.maplex.fomalhautshop.ui.eval
 import top.maplex.fomalhautshop.ui.inits
+import top.maplex.fomalhautshop.utils.check
 
 object UIShopInfo {
 
@@ -41,11 +42,12 @@ object UIShopInfo {
         elements {
             if (query.isNotEmpty()) {
                 ShopManager.goods.filter {
-                    it.group.contains(data) && (it.id.contains(query)
-                            || it.goodsItem.getShowName(player).contains(query))
+                    (it.group.contains(data) && (it.id.contains(query)
+                        || it.getGoodsItem().getShowName(player).contains(query)))
+                        && it.show.check(player).get() == true
                 }.sortedByDescending { it.weight }
             } else {
-                ShopManager.goods.filter { it.group.contains(data) }.sortedByDescending { it.weight }
+                ShopManager.goods.filter { it.group.contains(data) && it.show.check(player).get() == true }.sortedByDescending { it.weight }
             }
         }
         onGenerate { looker, element, index, slot ->
@@ -56,13 +58,14 @@ object UIShopInfo {
                         || (element.sell?.enable == true && element.sell?.checkSell(
                             player,
                             1,
-                            element.goodsItem
+                            element.getGoodsItem()
                         ) == true)
                     ) {
                         shiny()
                     }
                 }
                 colored()
+
             }
         }
         onClick { event, element ->
@@ -110,8 +113,11 @@ object UIShopInfo {
                             open(player, data, editor)
                             return@nextChat
                         }
-                        val amount = it.toIntOrNull()
-                        if (amount == null) {
+                        var amount = it.toIntOrNull()
+                        if (it == "all") {
+                            amount = element.sell!!.getAmount(element.getGoodsItem(), player)
+                        }
+                        if (amount == null || amount == 0) {
                             player.sendLang("chat-message-input-error")
                             open(player, data, editor)
                             return@nextChat

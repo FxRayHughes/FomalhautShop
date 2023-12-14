@@ -1,12 +1,13 @@
 package top.maplex.fomalhautshop.data.discount
 
-import taboolib.module.configuration.createLocal
+import taboolib.module.configuration.Config
+import taboolib.module.configuration.ConfigFile
 
 object DiscountPlayerData {
 
-    val config by lazy {
-        createLocal("player.yml")
-    }
+
+    @Config("player.yml")
+    lateinit var config: ConfigFile
 
     fun get(player: String, type: String): Int {
         return config.getInt("${player}.${type}", 0)

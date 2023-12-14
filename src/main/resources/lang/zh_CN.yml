@@ -3,6 +3,7 @@ system-message-sell-not-number: "§8[§4 商店 §8]§7 出售失败 你只有{0
 system-message-buy-not-money: "§8[§4 商店 §8]§7 你还缺少 &f{0}{1}"
 system-message-buy-not-permission: "§8[§4 商店 §8]§7 你缺少 &f{0}&7 权限无法购买"
 system-message-buy-not-limit: "§8[§4 商店 §8]§7 这个商品限购 {0}件 你已经购买了 {1} 件 只可以购买{2}件"
+system-message-sell-not-limit: "§8[§4 商店 §8]§7 这个商品限出售 {0}件 你已经出售了 {1} 件 只可以出售{2}件"
 shop-ui-goods-info: "&4&l[Q] &f打开详情页面"
 system-message-buy-not-item:
   - ==: JSON

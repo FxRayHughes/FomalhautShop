@@ -76,7 +76,7 @@ object UIGoodsEdit {
                     "Q###A###Z",
                     "#B#C#D#E#",
                     "#F#G#H#I#",
-                    "#########",
+                    "#J#######",
                 )
                 itemA(player, goods, 'A')
                 itemGroup(player, goods, 'B')
@@ -87,12 +87,42 @@ object UIGoodsEdit {
                 itemSell(player, goods, 'G')
                 setShiny(player, goods, 'H')
                 remove(player, goods, 'I')
+                setShow(player, goods, 'J')
                 onClose {
                     ShopReader.saveOne(goods)
                 }
             }
         }
 
+    }
+
+    private fun Basic.setShow(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(XMaterial.BOOK) {
+            name = "&f设置显示限制脚本"
+
+            lore.add("&f当前脚本:")
+            lore.addAll(goods.show.map { "&f$it" })
+            lore.add(" ")
+
+            lore.add("&f左键编辑")
+            lore.add("&f右键清空")
+            colored()
+        }) {
+            player.closeInventory()
+            if (clickEvent().isRightClick) {
+                goods.show.clear()
+                submit(delay = 1) {
+                    UIGoodsBuyEdit.open(player, goods)
+                }
+            } else {
+                player.inputBook("输入脚本", true, goods.show) {
+                    goods.show = it.toMutableList()
+                    submit(delay = 1) {
+                        UIGoodsBuyEdit.open(player, goods)
+                    }
+                }
+            }
+        }
     }
 
     private fun Basic.remove(player: Player, goods: ShopGoodsBaseData, char: Char) {
@@ -274,8 +304,11 @@ object UIGoodsEdit {
                         }
                         return@onClose
                     }
+
                     ShopItemManager.toString(item).let { it1 ->
+                        ShopItemManager.cache.remove(it1)
                         goods.goods = it1
+
                     }
                     player.sendLang("chat-message-input-edit-set-good-success", goods.goods)
                     submit(delay = 1) {
@@ -296,7 +329,8 @@ object UIGoodsEdit {
         }) {
             player.closeInventory()
             if (clickEvent().isRightClick) {
-                goods.goodsItem.getShowName(player).let {
+                ShopItemManager.cache.remove(goods.goods)
+                ShopItemManager.getItem(goods.goods).getShowName(player).let {
                     goods.name = "&f${it}".colored()
                 }
                 player.sendLang("chat-message-input-edit-set-name-success", goods.name)

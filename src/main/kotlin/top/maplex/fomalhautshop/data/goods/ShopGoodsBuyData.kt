@@ -19,6 +19,7 @@ import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.money.MoneyAPI
 import top.maplex.fomalhautshop.ui.eval
+import top.maplex.fomalhautshop.utils.check
 import top.maplex.fomalhautshop.utils.editAboData
 import top.maplex.fomalhautshop.utils.getAboData
 import top.maplex.fomalhautshop.utils.set
@@ -34,7 +35,7 @@ data class ShopGoodsBuyData(
     @Comment("购买物品是否给予物品")
     var give: Boolean = true,
     @Comment("商品购买时候的折扣组")
-    var discount: String = "NONE",
+    var discount: String = "NoUse",
     @Comment("商品购买时候的权限组")
     var permission: String = "shop.buy.default",
     @Comment("物品要求 请遵守格式 详见文档")
@@ -44,7 +45,9 @@ data class ShopGoodsBuyData(
     @Comment("限购数量 需要 Aboleth 插件")
     var limit: Int = -1,
     @Comment("限购识别关键字")
-    var limitId: String = "公共限购"
+    var limitId: String = "公共限购",
+    @Comment("购买限制 (Kether)")
+    var check: MutableList<String> = mutableListOf(),
 ) {
 
     fun getBuyLore(player: Player): List<String> {
@@ -61,7 +64,7 @@ data class ShopGoodsBuyData(
                 )
             }
         }
-        if (discount != "Null" && getMoney(player) != money) {
+        if (discount != "NoUse" && getMoney(player) != money) {
             lore.addAll(
                 player.asLangTextList(
                     "shop-ui-buy-discount",
@@ -102,7 +105,7 @@ data class ShopGoodsBuyData(
     }
 
     fun getMoney(player: Player): Double {
-        if (discount == "Null") {
+        if (discount == "NoUse") {
             return money
         }
         return DiscountManager.get(player, discount, money, moneyType)
@@ -112,6 +115,10 @@ data class ShopGoodsBuyData(
         //判断权限
         if (permission != "shop.buy.default") {
             player.sendLang("system-message-buy-not-permission", permission)
+            return false
+        }
+
+        if (check.check(player).get() == false) {
             return false
         }
 
@@ -260,7 +267,7 @@ data class ShopGoodsBuyData(
         itemTag.putDeep("shop.buy.moneyGet", getMoney(player))
         itemTag.putDeep("shop.buy.moneyType", moneyType)
         itemTag.putDeep("shop.buy.moneyTypeShow", MoneyAPI.getName(moneyType))
-        itemTag.putDeep("shop.buy.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none"))
+        itemTag.putDeep("shop.buy.moneyTypePapi", MoneyAPI.moneyConfig.getString("${moneyType}.get", "none")!!)
         itemTag.putDeep("shop.buy.moneyHas", MoneyAPI.getMoney(player, moneyType))
         itemTag.putDeep("shop.buy.discount", discount)
         itemTag.putDeep("shop.buy.permission", permission)
