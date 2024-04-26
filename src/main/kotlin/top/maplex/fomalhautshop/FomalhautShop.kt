@@ -12,8 +12,9 @@ import taboolib.module.lang.event.SystemSelectLocaleEvent
 
 @RuntimeDependencies(
     RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0",
-        relocate = ["!kotlin.", "!kotlin@kotlin_version_escape@."]
+        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3",
+        test = "!kotlinx.serialization.StringFormat",
+        relocate = ["!kotlin.", "!kotlin1923."]
     ),
 )
 object FomalhautShop : Plugin() {

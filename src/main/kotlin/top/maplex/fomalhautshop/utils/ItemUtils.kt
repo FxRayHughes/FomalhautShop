@@ -13,6 +13,26 @@ import taboolib.platform.util.modifyLore
 import taboolib.platform.util.modifyMeta
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 
+// 预检 是否有空位 返回空位数量
+fun Player.tryGiveItem(itemStack: ItemStack, amount: Int): Boolean {
+    var remainingAmount = amount
+    for (stack in inventory.storageContents ?: emptyArray()) {
+        if (stack == null) {
+            // 发现空槽位，减少剩余数量
+            remainingAmount -= itemStack.maxStackSize
+        } else if (stack.isSimilar(itemStack)) {
+            // 发现相似的物品堆叠，计算剩余的堆叠空间
+            val stackSpace = itemStack.maxStackSize - stack.amount
+            remainingAmount -= stackSpace
+        }
+
+        // 如果剩余数量已经小于等于零，则表示有足够的空位和堆叠空间
+        if (remainingAmount <= 0) {
+            return true
+        }
+    }
+    return false
+}
 
 fun ItemStack?.ifAir(): ItemStack? {
     if (this == null) {
@@ -138,7 +158,8 @@ fun ItemStack?.papi(player: Player, shopGoodsBaseData: ShopGoodsBaseData): ItemS
         }
     }
     modifyLore {
-        val clone = map { it.replace("{shop}", shopGoodsBaseData.id).replacePlaceholder(player).colored() }.toMutableList()
+        val clone =
+            map { it.replace("{shop}", shopGoodsBaseData.id).replacePlaceholder(player).colored() }.toMutableList()
         this.clear()
         this.addAll(clone)
     }

@@ -16,9 +16,9 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 
-object ShopMinecraftItem : ShopItem {
+object ShopBase64Item : ShopItem {
 
-    override val source: String = "MC"
+    override val source: String = "B64"
 
     @Awake(LifeCycle.ENABLE)
     fun init() {
@@ -31,16 +31,15 @@ object ShopMinecraftItem : ShopItem {
 
     override fun getItem(player: Player, id: String): ItemStack? {
         return try {
-            id.parseToItemStack()
+            id.deserializeToItemStack()
         } catch (e: Exception) {
             null
         }
     }
     override fun getItemId(itemStack: ItemStack): String {
-        if (itemStack.hasItemMeta() || itemStack.hasName() || itemStack.hasLore()) {
-            return "none"
-        }
-        return itemStack.type.name
+        return itemStack.clone().apply {
+            amount = 1
+        }.serializeToString()
     }
 
     fun ItemStack.serializeToString(): String {

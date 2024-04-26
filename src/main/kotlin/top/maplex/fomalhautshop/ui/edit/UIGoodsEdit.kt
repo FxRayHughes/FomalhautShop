@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
-import taboolib.module.ui.ClickType
+import taboolib.module.nms.getName
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Basic
 import taboolib.module.ui.type.Linked
@@ -17,6 +17,7 @@ import top.maplex.fomalhautshop.data.goods.ShopGoodsSellData
 import top.maplex.fomalhautshop.item.ShopItem
 import top.maplex.fomalhautshop.item.ShopItemManager
 import top.maplex.fomalhautshop.reader.ShopReader
+import top.maplex.fomalhautshop.utils.ifAir
 import top.maplex.fomalhautshop.utils.papi
 
 object UIGoodsEdit {
@@ -76,7 +77,7 @@ object UIGoodsEdit {
                     "Q###A###Z",
                     "#B#C#D#E#",
                     "#F#G#H#I#",
-                    "#J#######",
+                    "#J#K#####",
                 )
                 itemA(player, goods, 'A')
                 itemGroup(player, goods, 'B')
@@ -88,12 +89,93 @@ object UIGoodsEdit {
                 setShiny(player, goods, 'H')
                 remove(player, goods, 'I')
                 setShow(player, goods, 'J')
+                createCopy(player, goods, 'K')
                 onClose {
                     ShopReader.saveOne(goods)
                 }
             }
         }
 
+    }
+
+    private fun Basic.createCopy(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(XMaterial.CHEST_MINECART) {
+            name = "&f批量创建副本"
+
+            lore.add("&f创建规则: ")
+            lore.add("&f- &f副本ID: &e${goods.id}_[序号]")
+            lore.add("&f- &f副本名称: &e[物品名]")
+            lore.add("&f- &f副本优先级: &e${goods.weight} - 1 (${goods.weight - 1})")
+            lore.add("&f- &f副本组: &e${goods.group.joinToString(", ")} + copy_${goods.id}}")
+            lore.add("&f ")
+            lore.add("&f左键创建")
+            lore.add("&f- &f把要设置的物品放入即可批量添加商品")
+            lore.add("&f- &f关闭放入UI 即可创建")
+            colored()
+        }) {
+            player.closeInventory()
+            submit(delay = 1) {
+                player.openMenu<Basic>("放入要快速创建的商品本体") {
+                    map(
+                        "####A####",
+                        "#@@@@@@@@#",
+                        "#@@@@@@@@#",
+                        "#@@@@@@@@#",
+                        "##########",
+                    )
+                    val slots = getSlots('@')
+                    set('#', buildItem(XMaterial.BLACK_STAINED_GLASS_PANE) {
+                        name = " "
+                        colored()
+                    }) {
+                        isCancelled = true
+                    }
+
+                    set('A', buildItem(XMaterial.CHEST_MINECART) {
+                        name = "&f批量创建副本"
+                        lore.add("&f创建规则: ")
+                        lore.add("&f- &f副本ID: &e${goods.id}_[序号]")
+                        lore.add("&f- &f副本名称: &e[物品名]")
+                        lore.add("&f- &f副本优先级: &e${goods.weight} - 1 (${goods.weight - 1})")
+                        lore.add("&f- &f副本组: &e${goods.group.joinToString(", ")} + copy_${goods.id}}")
+                        lore.add("&f ")
+                        colored()
+                    }) {
+                        isCancelled = true
+                    }
+                    handLocked(false)
+
+                    onClose { event ->
+                        val inv = event.inventory
+                        val items = slots.mapNotNull { inv.getItem(it).ifAir() }
+                        if (items.isEmpty()) {
+                            player.sendLang("chat-message-input-error")
+                            submit(delay = 1) {
+                                open(player, goods)
+                            }
+                            return@onClose
+                        }
+                        items.forEachIndexed { index, itemStack ->
+                            val newGoods = goods.copy()
+                            newGoods.id = "${goods.id}_${index + 1}"
+                            newGoods.name = itemStack.getName()
+                            newGoods.weight = goods.weight - 1
+                            newGoods.group = goods.group.toMutableList()
+                            newGoods.group.add("copy_${goods.id}")
+                            newGoods.goods = ShopItemManager.toString(itemStack)
+
+                            newGoods.buy = goods.buy?.copy()
+                            newGoods.sell = goods.sell?.copy()
+
+                            newGoods.path = "shops\\copy\\${goods.id}\\${newGoods.id}.yml"
+
+                            ShopManager.goods.add(newGoods)
+                            ShopReader.saveOne(newGoods)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun Basic.setShow(player: Player, goods: ShopGoodsBaseData, char: Char) {
@@ -256,11 +338,22 @@ object UIGoodsEdit {
     }
 
 
+    // 字换行
+    fun dealOtherRemark(otherRemark: String): List<String> {
+        if (otherRemark.isBlank()) {
+            return listOf()
+        }
+        val length = otherRemark.length
+        return if (length <= 50) {
+            listOf(otherRemark)
+        } else otherRemark.replace("(.{50})".toRegex(), "\n").split("\n")
+    }
+
     fun Basic.itemA(player: Player, goods: ShopGoodsBaseData, char: Char) {
         set(char, goods.showItem(player, false).apply {
             modifyLore {
 
-                add("&f${goods.goods}")
+                addAll(dealOtherRemark(goods.goods).map { "&f$it" })
                 add(" ")
                 add("&f左键设置来源 (UI选择)")
                 add("&f右键放入物品自动识别")

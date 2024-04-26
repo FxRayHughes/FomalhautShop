@@ -17,7 +17,7 @@ interface ShopItem {
      * 物品列表
      */
     fun getItemList(): MutableList<ItemStack> {
-        
+
         return mutableListOf()
     }
 
@@ -63,7 +63,14 @@ interface ShopItem {
      * @return 是否有物品
      */
     fun getNumber(player: Player, id: String): Int {
-        return player.inventory.countItem { getItemId(it) == id }
+        val armorContents = player.inventory.armorContents
+        return player.inventory.countItem {
+            if (!armorContents.contains(it)) {
+                getItemId(it) == id
+            } else {
+                false
+            }
+        }
     }
 
     /**
@@ -75,8 +82,13 @@ interface ShopItem {
      */
     fun takeItem(player: Player, id: String, amount: Int): Boolean {
         if (isMeet(player, id, amount)) {
+            val armorContents = player.inventory.armorContents
             player.inventory.takeItem(amount) {
-                getItemId(it) == id
+                if (!armorContents.contains(it)) {
+                    getItemId(it) == id
+                } else {
+                    false
+                }
             }
         }
         return false

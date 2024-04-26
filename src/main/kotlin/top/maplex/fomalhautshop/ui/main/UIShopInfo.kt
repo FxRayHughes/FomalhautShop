@@ -54,7 +54,7 @@ object UIShopInfo {
             return@onGenerate buildItem(element.showItem(looker).clone()) {
 
                 if (element.shiny) {
-                    if ((element.buy?.enable == true && element.buy?.checkBuy(player, 1, false) == true)
+                    if ((element.buy?.enable == true && element.buy?.checkBuy(player, 1,element.getGoodsItem(), false) == true)
                         || (element.sell?.enable == true && element.sell?.checkSell(
                             player,
                             1,

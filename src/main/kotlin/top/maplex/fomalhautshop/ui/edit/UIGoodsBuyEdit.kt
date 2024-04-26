@@ -22,7 +22,7 @@ object UIGoodsBuyEdit {
                     "Q###A###Z",
                     "#B#C#D#E#",
                     "#F#G#H#I#",
-                    "#J#######",
+                    "#J#K#####",
                 )
                 itemA(player, goods, 'A')
                 setMoney(player, goods, 'B')
@@ -34,6 +34,7 @@ object UIGoodsBuyEdit {
                 setLimit(player, goods, 'H')
                 setScript(player, goods, 'I')
                 setCheck(player, goods, 'J')
+                setItemNeedSlot(player, goods, 'K')
 
                 set('Q', buildItem(XMaterial.OAK_DOOR) {
                     name = "&f返回"
@@ -46,6 +47,27 @@ object UIGoodsBuyEdit {
                 onClose {
                     ShopReader.saveOne(goods)
                 }
+            }
+        }
+    }
+
+    private fun Basic.setItemNeedSlot(player: Player, goods: ShopGoodsBaseData, char: Char) {
+        set(char, buildItem(XMaterial.CHEST) {
+            name = "&f设置商品需求槽位数量"
+            lore.add("&f当前物品需求槽位: ${goods.buy!!.needSlotAmount}")
+            colored()
+        }) {
+            player.closeInventory()
+            player.sendMessage("请输入物品需求槽位数量")
+            player.nextChat {
+                val money = it.toIntOrNull()
+                if (money == null) {
+                    player.sendMessage("输入错误退出捕获")
+                    return@nextChat
+                }
+                goods.buy!!.needSlotAmount = money
+                player.sendLang("chat-message-input-edit-set-good-success", money)
+                open(player, goods)
             }
         }
     }
@@ -208,7 +230,7 @@ object UIGoodsBuyEdit {
                             items[mapId] = shopItemData
                         }
                     }
-                    goods.buy!!.items = items.values.map {z-> z.toStringValue() }.toMutableList()
+                    goods.buy!!.items = items.values.map { z -> z.toStringValue() }.toMutableList()
                     submit(delay = 2) {
                         open(player, goods)
                     }

@@ -4,6 +4,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.io.newFolder
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
+import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.util.resettableLazy
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.ConfigFile
 import taboolib.module.configuration.Configuration
@@ -41,6 +43,7 @@ object UIReader {
         ShopManager.goods.clear()
 
         files.clear()
+        releaseResourceFile("ui/sell_ui.yml")
         loadFile(File(getDataFolder(), "ui/"))
         loadConfig()
 
@@ -50,9 +53,9 @@ object UIReader {
 
         files.clear()
         loadFile(File(getDataFolder(), "shops/"))
-        newFolder(getDataFolder(),"shops/noLoad",create = true)
+        newFolder(getDataFolder(), "shops/noLoad", create = true)
         files.forEach {
-            if (it.path.startsWith("plugins\\FomalhautShop\\shops\\noLoad")) {
+            if (it.path.contains("noLoad")) {
                 return@forEach
             }
             ShopReader.loadData(it)

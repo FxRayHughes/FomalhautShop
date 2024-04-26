@@ -19,6 +19,7 @@ import taboolib.platform.util.modifyMeta
 import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.item.ShopItemData
 import top.maplex.fomalhautshop.item.ShopItemManager
+import top.maplex.fomalhautshop.utils.itemTagReader
 import java.io.File
 import java.nio.charset.StandardCharsets
 
@@ -54,24 +55,24 @@ data class ShopGoodsBaseData(
 
     fun showItem(player: Player, editor: Boolean = false): ItemStack {
         val item = ShopItemManager.getItem(goods).getItemAmount(player).clone()
-        val itemTag = item.getItemTag()
-        itemTag.putDeep("shop.id", id)
-        itemTag.putDeep("shop.group", group.joinToString(","))
-        itemTag.putDeep("shop.name", name)
-        itemTag.putDeep("shop.weight", weight)
-        itemTag.putDeep("shop.info", info.joinToString(","))
-        itemTag.putDeep("shop.goods.data", goods)
-        itemTag.putDeep("shop.goods.show", ShopItemManager.getItem(goods).getShowString(player))
-        val sellNbt = sell?.setNBT(player, item, itemTag)
-        if (sellNbt == null) {
-            itemTag.putDeep("shop.sell.enable", false)
+        item.itemTagReader {
+            set("shop.id", id)
+            set("shop.group", group.joinToString(","))
+            set("shop.name", name)
+            set("shop.weight", weight)
+            set("shop.info", info.joinToString(","))
+            set("shop.goods.data", goods)
+            set("shop.goods.show", ShopItemManager.getItem(goods).getShowString(player))
+            val sellNbt = sell?.setNBT(player, item, itemTag)
+            if (sellNbt == null) {
+                set("shop.sell.enable", false)
+            }
+            val buyNbt = buy?.setNBT(player, item, itemTag)
+            if (buyNbt == null) {
+                set("shop.buy.enable", false)
+            }
+            write(item)
         }
-        val buyNbt = buy?.setNBT(player, item, itemTag)
-        if (buyNbt == null) {
-            itemTag.putDeep("shop.buy.enable", false)
-        }
-        itemTag.saveTo(item)
-        item.setItemTag(itemTag)
         return item.apply {
             item.modifyMeta<ItemMeta> {
                 setDisplayName(getShowName(player))
@@ -87,9 +88,7 @@ data class ShopGoodsBaseData(
                 if (sell != null && sell!!.enable) {
                     addAll(sell!!.getSellLore(player, getGoodsItem()))
                 }
-
                 addAll(player.asLangTextList("shop-ui-goods-info"))
-
                 if (editor) {
                     addAll(player.asLangTextList("shop-ui-edit-normal", id))
                 }
@@ -106,7 +105,7 @@ data class ShopGoodsBaseData(
     }
 
     fun buy(player: Player, amount: Int) {
-        if (buy != null && buy!!.enable && buy!!.checkBuy(player, amount, true)) {
+        if (buy != null && buy!!.enable && buy!!.checkBuy(player, amount, getGoodsItem(), true)) {
             buy!!.evalBuy(player, amount, getGoodsItem(), this)
             buy!!.sendBuyMessage(player, amount, getShowName(player))
         }
@@ -121,7 +120,7 @@ data class ShopGoodsBaseData(
 
     fun checkShow(player: Player): Boolean {
 
-        if (buy != null && !buy!!.checkBuy(player, 1)) {
+        if (buy != null && !buy!!.checkBuy(player, 1, getGoodsItem())) {
             return false
         }
 

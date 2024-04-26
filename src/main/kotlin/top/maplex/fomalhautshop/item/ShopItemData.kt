@@ -25,6 +25,12 @@ data class ShopItemData(
         ShopItemManager.getData(type)
     }
 
+    fun isSame(itemStack: ItemStack): Boolean {
+        item.getItemId(itemStack).let {
+            return it == id && itemStack.amount >= amount
+        }
+    }
+
     fun toStringValue(): String {
         return "[${type}] ${id} => ${amount}"
     }

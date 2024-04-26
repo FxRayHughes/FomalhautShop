@@ -13,9 +13,9 @@ import top.maplex.fomalhautshop.money.MoneyAPI
 import top.maplex.fomalhautshop.reader.ShopOldReader
 import top.maplex.fomalhautshop.reader.ShopReader
 import top.maplex.fomalhautshop.ui.UIReader
-import top.maplex.fomalhautshop.ui.edit.UIGoodsBuyEdit
 import top.maplex.fomalhautshop.ui.edit.UIGoodsEdit
 import top.maplex.fomalhautshop.ui.main.UIShopInfo
+import top.maplex.fomalhautshop.ui.main.UIShopSell
 import top.maplex.fomalhautshop.utils.flattenList
 
 @CommandHeader(name = "fomalhautShop", aliases = ["fs", "shop"], permission = "shop.use")
@@ -104,6 +104,26 @@ object ShopMainCommand {
                     val shop = ShopManager.goods.firstOrNull { it.id == context["商品ID"] } ?: return@execute
                     shop.sell(sender, context.int("数量"))
                 }
+            }
+        }
+    }
+
+    @CommandBody(permission = "shop.sellui")
+    val sellUI = subCommand {
+        dynamic("商店") {
+            suggestion<CommandSender>(uncheck = true) { sender, context ->
+                ShopManager.goods.map { it.group }.flattenList()
+            }
+            player("目标玩家") {
+                execute<CommandSender> { sender, context, argument ->
+                    val group = context["商店"].split(",").toList()
+                    val player = Bukkit.getPlayer(context.player("目标玩家").uniqueId) ?: return@execute
+                    UIShopSell.open(player, group)
+                }
+            }
+            execute<Player> { sender, context, argument ->
+                val group = context["商店"].split(",").toList()
+                UIShopSell.open(sender, group)
             }
         }
     }
@@ -204,4 +224,3 @@ object ShopMainCommand {
     }
 
 }
-

@@ -1,16 +1,14 @@
 package top.maplex.fomalhautshop.reader
 
+import org.bukkit.Material
 import ray.mintcat.shop.Shop
 import ray.mintcat.shop.data.ShopCommodityData
 import ray.mintcat.shop.data.materials.ShopMaterialData
-import taboolib.common.platform.function.getDataFolder
 import top.maplex.fomalhautshop.data.ShopManager
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBaseData
 import top.maplex.fomalhautshop.data.goods.ShopGoodsBuyData
 import top.maplex.fomalhautshop.data.goods.ShopGoodsSellData
-import top.maplex.fomalhautshop.reader.ShopOldReader.toNew
-import java.io.File
-import java.util.UUID
+import java.util.*
 
 object ShopOldReader {
 
@@ -28,7 +26,7 @@ object ShopOldReader {
 
     private fun ShopCommodityData.toNew(): ShopGoodsBaseData {
 
-        val goods = "[${newId(this.item.form)}] ${this.item.id} => ${this.item.amount}"
+        val goods = "[${newId(this.item.form, this.item.id)}] ${this.item.id} => ${this.item.amount}"
 
         return ShopGoodsBaseData(
             this.id ?: UUID.randomUUID().toString(),
@@ -48,12 +46,19 @@ object ShopOldReader {
     }
 
     fun ShopMaterialData.newItem(): String {
-        return "[${newId(this.form)}] ${this.id} => ${this.amount}"
+        return "[${newId(this.form, this.id)}] ${this.id} => ${this.amount}"
     }
 
-    fun newId(string: String): String {
+    fun newId(string: String, value: String): String {
         return when (string) {
-            "Minecraft" -> "MC"
+            "Minecraft" -> {
+                if (Material.getMaterial(value) != null) {
+                    "MC"
+                } else {
+                    "B64"
+                }
+            }
+
             "ItemsAdder" -> "IA"
             "ItemSystem" -> "IS"
             "MMOItems" -> "MI"

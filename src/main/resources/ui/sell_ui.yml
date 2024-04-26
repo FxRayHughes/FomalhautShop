@@ -1,0 +1,18 @@
+Shop: "sell_ui"
+Title: "§f出售物品"
+# 回收页面
+Layout:
+  - "#########"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#@@@@@@@#"
+  - "#########"
+# 关闭UI后确认
+
+OtherItem:
+  "#":
+    item:
+      material: "STAINED_GLASS_PANE"
+      name: "§c屏障"
+    action: []

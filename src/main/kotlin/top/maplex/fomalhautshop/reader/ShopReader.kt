@@ -13,7 +13,10 @@ import java.nio.charset.StandardCharsets
 
 object ShopReader {
 
-    fun loadData(file: File){
+    fun loadData(file: File) {
+        if (file.path.contains("noLoad")) {
+            return
+        }
         file.readText(StandardCharsets.UTF_8).let { text ->
             ShopManager.goods.add(
                 Yaml.decodeFromString(ShopGoodsBaseData.serializer(), text).apply {
